@@ -1,0 +1,883 @@
+name: Build Мои игры (APK)
+
+# Один файл на весь проект: при каждой сборке он сам создаёт все файлы Android-приложения
+# (манифест, gradle, код на Java, интерфейс в виде HTML) и собирает подписанный APK.
+# Готовый APK берётся из Releases (вкладка справа в репозитории) или из Actions -> запуск -> Artifacts.
+# Подпись у всех сборок одна и та же, поэтому новую версию можно ставить поверх старой.
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Create project files
+        run: |
+          mkdir -p app/src/main/java/com/mygames/launcher app/src/main/res/xml app/src/main/assets
+
+          cat > settings.gradle <<'SETTINGS_EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "MyGames"
+          include ':app'
+          SETTINGS_EOF
+
+          cat > build.gradle <<'ROOT_EOF'
+          plugins {
+              id 'com.android.application' version '8.2.2' apply false
+          }
+          ROOT_EOF
+
+          cat > gradle.properties <<'PROPS_EOF'
+          android.useAndroidX=true
+          org.gradle.jvmargs=-Xmx2g
+          PROPS_EOF
+
+          base64 -d > app/launcher.keystore <<'KEYSTORE_EOF'
+          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
+          KEYSTORE_EOF
+
+          cat > app/build.gradle <<'APP_EOF'
+          plugins {
+              id 'com.android.application'
+          }
+          android {
+              namespace 'com.mygames.launcher'
+              compileSdk 34
+              defaultConfig {
+                  applicationId 'com.mygames.launcher'
+                  minSdk 21
+                  targetSdk 34
+                  versionCode 2
+                  versionName '2.0'
+              }
+              signingConfigs {
+                  mygames {
+                      storeFile file('launcher.keystore')
+                      storePassword 'mygames123'
+                      keyAlias 'mygames'
+                      keyPassword 'mygames123'
+                  }
+              }
+              buildTypes {
+                  debug {
+                      signingConfig signingConfigs.mygames
+                  }
+              }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          dependencies {
+              implementation 'androidx.core:core:1.12.0'
+          }
+          APP_EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'MANIFEST_EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+              <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+              <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+              <application
+                  android:label="Мой Steam"
+                  android:allowBackup="true"
+                  android:usesCleartextTraffic="true"
+                  android:theme="@android:style/Theme.Material.NoActionBar">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize|keyboardHidden">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+                  <provider
+                      android:name="androidx.core.content.FileProvider"
+                      android:authorities="com.mygames.launcher.fileprovider"
+                      android:exported="false"
+                      android:grantUriPermissions="true">
+                      <meta-data
+                          android:name="android.support.FILE_PROVIDER_PATHS"
+                          android:resource="@xml/file_paths" />
+                  </provider>
+              </application>
+          </manifest>
+          MANIFEST_EOF
+
+          cat > app/src/main/res/xml/file_paths.xml <<'PATHS_EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <paths>
+              <external-files-path name="apk" path="apk/" />
+          </paths>
+          PATHS_EOF
+
+          cat > app/src/main/assets/index.html <<'HTML_EOF'
+          <!DOCTYPE html>
+          <html lang="ru">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+          <title>Мой Steam</title>
+          <style>
+          :root{
+            --bg:#171a21; --bar:#1b2838; --panel:#16202d; --card:#1f2d3f; --line:#2c3e55;
+            --txt:#c7d5e0; --mut:#8f98a0; --acc:#66c0f4; --green:#4c9a2a; --green2:#5ba32b; --red:#c0392b; --yel:#e8c53a;
+          }
+          @media (prefers-color-scheme: light){ :root[data-theme="auto"]{} }
+          :root[data-theme="dark"]{}
+          *{box-sizing:border-box}
+          html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+          body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+          a{color:var(--acc)}
+          header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bar);border-bottom:1px solid var(--line)}
+          .top{display:flex;align-items:center;gap:10px;padding:10px 14px}
+          .logo{font-weight:800;letter-spacing:.5px;color:#fff;font-size:18px;white-space:nowrap}
+          .logo span{color:var(--acc)}
+          nav{display:flex;gap:2px;overflow-x:auto;padding:0 8px 8px;scrollbar-width:none}
+          nav::-webkit-scrollbar{display:none}
+          nav button{flex:0 0 auto;background:transparent;color:var(--mut);border:0;padding:9px 14px;border-radius:6px 6px 0 0;font-size:14px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent}
+          nav button.on{color:#fff;border-bottom-color:var(--acc);background:rgba(102,192,244,.08)}
+          main{max-width:1100px;margin:0 auto;padding:14px}
+          h2{margin:6px 0 12px;font-size:20px;color:#fff}
+          .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+          .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .12s,border-color .12s}
+          .card:hover{transform:translateY(-2px);border-color:var(--acc)}
+          .card .art{height:140px}
+          .card .body{padding:12px 14px}
+          .card h3{margin:0 0 4px;color:#fff;font-size:17px}
+          .card p{margin:0 0 8px;color:var(--mut);font-size:13px;line-height:1.35}
+          .tags{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+          .tag{background:rgba(102,192,244,.12);color:var(--acc);border-radius:4px;padding:2px 8px;font-size:12px}
+          .plat{display:flex;gap:6px;flex-wrap:wrap}
+          .plat i{font-style:normal;background:#0f1722;border:1px solid var(--line);border-radius:4px;padding:2px 7px;font-size:11px;color:#b9c6d2}
+          .price{color:var(--green2);font-weight:800;font-size:13px;margin-top:6px}
+          .lib{display:grid;grid-template-columns:230px 1fr;gap:14px}
+          @media (max-width:760px){ .lib{grid-template-columns:1fr} .libside{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px} .libside .item{flex:0 0 auto} }
+          .libside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px}
+          .item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;cursor:pointer;color:var(--txt);font-size:14px}
+          .item:hover{background:#243a52}
+          .item.on{background:#2b4764;color:#fff}
+          .item .dot{width:26px;height:26px;border-radius:6px;flex:0 0 auto}
+          .hero{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+          .hero .art{height:200px;position:relative}
+          .hero .art .ttl{position:absolute;left:16px;bottom:12px;font-size:28px;font-weight:900;color:#fff;text-shadow:0 2px 10px #000}
+          .hero .info{padding:14px 16px}
+          .hero .info .meta{display:flex;flex-wrap:wrap;gap:14px;color:var(--mut);font-size:13px;margin:6px 0 10px}
+          .actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+          .btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;color:#fff;background:#2a475e}
+          .btn:hover{background:#3d6c8e}
+          .btn.play{background:linear-gradient(#5ba32b,#4c9a2a);font-size:16px}
+          .btn.play:hover{background:linear-gradient(#6bb83a,#58a82e)}
+          .btn.off{background:#2a2f38;color:#7b8794;cursor:pointer}
+          .sub{display:flex;gap:4px;margin:14px 0 8px;border-bottom:1px solid var(--line)}
+          .sub button{background:none;border:0;color:var(--mut);font-weight:700;padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;font-size:14px}
+          .sub button.on{color:#fff;border-bottom-color:var(--acc)}
+          .sec p,.sec li{line-height:1.5;font-size:14px}
+          .sec ul,.sec ol{padding-left:20px;margin:6px 0}
+          .box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0}
+          .box h4{margin:0 0 6px;color:#fff;font-size:15px}
+          code,pre{font-family:ui-monospace,Menlo,Consolas,monospace}
+          pre{background:#0d131c;border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;font-size:12px;line-height:1.45;margin:6px 0;white-space:pre-wrap;word-break:break-word}
+          .linkrow{display:grid;grid-template-columns:150px 1fr 24px;gap:8px;align-items:center;margin:7px 0}
+          @media (max-width:620px){ .linkrow{grid-template-columns:1fr 24px} .linkrow label{grid-column:1/-1;margin-bottom:-4px} }
+          .linkrow label{font-size:13px;color:#b9c6d2}
+          .linkrow input{width:100%;background:#0d131c;border:1px solid var(--line);border-radius:6px;color:#fff;padding:9px 10px;font-size:13px;min-width:0}
+          .linkrow input:focus{outline:none;border-color:var(--acc)}
+          .st{width:14px;height:14px;border-radius:50%;background:#555;justify-self:center}
+          .st.ok{background:#4c9a2a}.st.bad{background:#c0392b}
+          .hint{font-size:12px;color:var(--mut);margin:2px 0 0}
+          .row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+          .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0d131c;border:1px solid var(--acc);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+          .toast.show{opacity:1}
+          .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+          .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center}
+          .stat b{display:block;color:#fff;font-size:20px}
+          .stat span{font-size:12px;color:var(--mut)}
+          </style>
+          </head>
+          <body>
+          <header>
+            <div class="top"><div class="logo">МОЙ <span>STEAM</span></div><div style="margin-left:auto;font-size:12px;color:var(--mut)" id="hdrinfo"></div></div>
+            <nav id="nav"></nav>
+          </header>
+          <main id="main"></main>
+          <div class="toast" id="toast"></div>
+
+          <script>
+          "use strict";
+          /* ====================== ДАННЫЕ ИГР ====================== */
+          // Ссылки, которые я знаю наверняка, заполнены. Пустые поля вставь в разделе «Ссылки» - они сохранятся в браузере.
+          var LINK_TYPES = [
+            ["web",   "Играть в браузере"],
+            ["itch",  "Страница на itch.io"],
+            ["apk",   "APK (ссылка на файл или GitHub-репозиторий)"],
+            ["win",   "Скачать для Windows"],
+            ["repo",  "GitHub (репозиторий)"],
+            ["source","Исходный код (файл)"]
+          ];
+          var GAMES = [
+            {
+              id:"blockblast", name:"Block Blast", art:"blocks", color:"#e8a33a",
+              short:"Головоломка: ставь фигуры на поле и собирай линии.",
+              tags:["Головоломка","Казуальная","Один игрок","pygame"],
+              platforms:["Android","Web","Windows"], version:"3.0", size:"≈ 380 КБ (один файл .py)", price:"Бесплатно", pkg:"",
+              desc:"Block Blast на pygame: перетаскивай фигуры пальцем на поле 8×8, собирай целые линии и набирай очки. Игра сделана одним файлом для Pydroid 3 на Android и для компьютера. Сохранения лежат в папке block_blast_data рядом с файлом.",
+              features:["Один файл block_blast_v3.py - ничего больше копировать не нужно","Управление пальцем: перетаскивание фигур, «Назад» - пауза","Экономия батареи: 60 кадров в секунду в игре и 30, когда ничего не двигается","Защита от «прыжка времени» после сворачивания","Работает на Android (Pydroid 3) и на ПК (Python 3.9+)"],
+              req:["Android: Pydroid 3 и пакет pygame (Pip → pygame → Install)","ПК: Python 3.9 или новее и pygame (pip install pygame)"],
+              howto:[
+                ["Android (Pydroid 3)","1. В Pydroid 3 открой меню ☰ → Pip → найди «pygame» → Install (один раз).\n2. Открой файл block_blast_v3.py и нажми ▶."],
+                ["Windows / Linux / Mac","1. Установи Python 3.9+ с python.org.\n2. В командной строке: pip install pygame\n3. Запуск: python block_blast_v3.py"],
+                ["Android APK","APK собирается через GitHub Actions в репозитории с игрой. Скачай app-debug.apk из Actions → Artifacts или из Releases и поставь (разреши установку из этого источника)."]
+              ],
+              news:["v3: однофайловая версия для Pydroid 3 и ПК","Веб-версия выложена на itch.io","APK собирается через GitHub Actions"],
+              links:{web:"https://block-blast1.itch.io", itch:"https://block-blast1.itch.io", apk:"https://github.com/vladionin63-tech/-block-blast", win:"", repo:"https://github.com/vladionin63-tech/-block-blast", source:""},
+              notes:{repo:"Репозиторий приватный: ссылка откроется только у тебя (после входа в GitHub).", web:"Это страница профиля на itch.io. Если у игры своя страница - впиши её полную ссылку."}
+            },
+            {
+              id:"zombie", name:"Zombie Siege 3D", art:"zombie", color:"#c0392b",
+              short:"Кооперативное выживание против зомби с 3D-рейкастингом.",
+              tags:["Шутер","Выживание","Кооператив","C++ / SDL2"],
+              platforms:["Android","Windows"], version:"17", size:"≈ 340 КБ (один файл .cpp)", price:"Бесплатно", pkg:"",
+              desc:"Zombie Siege 3D на C++ и SDL2: кооперативное выживание против зомби, рейкастинг-3D, прокачка и баррикады. Играть вместе можно по одной Wi-Fi сети или через точку доступа: один создаёт игру, остальные присоединяются по тапу или вводом IP. Левым пальцем ходишь, правым крутишь камеру.",
+              features:["Кооператив: СОЗДАТЬ ИГРУ / ПРИСОЕДИНИТЬСЯ (Wi-Fi или точка доступа, вход по IP)","Ящики на карте ломаются стрельбой (50 HP): 70% пусто, 25% лом, 5% оружие и аптечка","Гранаты (взрыв до 260 урона в радиусе 3,4) и оглушение (все зомби замирают на 5 с)","Магазин: оружие и аптечки за лом (в одиночной игре время на паузе)","Кнопки: огонь, авто, строй (баррикада и ремонт), заряд, смена, старт, магазин","Настройки: расположение кнопок (перетаскивай), режим левши, размер кнопок, графика","На ПК: WASD или стрелки, Q/E, пробел, B, R, Tab, Enter, M (магазин), G/H (гранаты)"],
+              req:["Android: Cxxdroid (Меню → Install Libraries → SDL2)","ПК: компилятор C++ и SDL2 (MinGW на Windows)"],
+              howto:[
+                ["Android (Cxxdroid)","1. В Cxxdroid: Меню → Install Libraries → SDL2 (один раз).\n2. Открой zombie_siege_3d.cpp и нажми Run.\n3. Играть вместе: все в одной Wi-Fi сети. Хост - «СОЗДАТЬ ИГРУ», друзья - «ПРИСОЕДИНИТЬСЯ»."],
+                ["Android APK (GitHub Actions)","Сборка APK идёт из репозитория zombie-siege-android (шаблон SDL2 android-project). После успешной сборки APK лежит в Actions → Artifacts."],
+                ["Windows (MinGW + SDL2)","1. Установи MinGW-w64 и SDL2 (dev-версию для MinGW).\n2. Команда (подбери под свои пути): g++ zombie_siege_3d.cpp -O2 -o ZombieSiege.exe -lmingw32 -lSDL2main -lSDL2 -lws2_32 -mwindows\n3. Положи SDL2.dll рядом с exe.\nИгра использует сокеты Linux/Android: на Windows может потребоваться небольшая правка сетевой части - скажи, если будут ошибки компиляции."]
+              ],
+              news:["Магазин оружия за лом и отдельная раскладка кнопок","Гранаты и оглушение, ломаемые ящики","Подготовлен репозиторий для сборки APK"],
+              links:{web:"", itch:"", apk:"https://github.com/kokoko123456778/zombie-siege-android", win:"", repo:"https://github.com/kokoko123456778/zombie-siege-android", source:""},
+              notes:{repo:"Репозиторий для сборки APK через GitHub Actions.", itch:"Игру планируется выложить на itch.io - впиши ссылку, когда она появится."}
+            },
+            {
+              id:"mechanic", name:"Симулятор механика 3D", art:"car", color:"#2f7fd1",
+              short:"Автомастерская с открытым миром: чини, покупай, продавай и вози пассажиров.",
+              tags:["Симулятор","Открытый мир","Машины","C++ / SDL"],
+              platforms:["Windows","Android"], version:"в разработке", size:"≈ 4,6 МБ (один файл .cpp)", price:"Бесплатно", pkg:"",
+              desc:"3D-игра про автомеханика: мастерская, мойка, заправка и открытый город. Покупай и продавай машины, меняй детали, бери заказы клиентов, вызывай эвакуатор и работай таксистом. Вместо упрощённых моделей - больше 35 реальных 3D-машин с значками марок, дорожная разметка и знаки, реалистичный разгон и торможение. Старт с $500.",
+              features:["Больше 35 реальных 3D-моделей (Тойота, БМВ, Ауди, Порше, Феррари, Форд, Киа, Мини, Мазда и другие), значки марок на капоте","Мастерская, мойка, заправка, замена масла и деталей","Заказы клиентов, эвакуатор и работа таксистом (смена, пассажиры, тариф, чаевые, штрафы за аварии)","Город с двумя полосами в каждую сторону, зебры, стоп-линии и десять видов дорожных знаков","Реалистичная физика: разгон по кривой, торможение около 1 g, накат","Горизонтальный экран, плашка FPS и автоподстройка качества под слабый телефон","Старт с $500"],
+              req:["Android: ccdroid (C4droid) и SDL","ПК: компилятор C++ и SDL2 (MinGW на Windows)"],
+              howto:[
+                ["Android (ccdroid)","Открой mechanic3d.cpp в ccdroid и нажми Run. Файл большой (около 4,6 МБ), первая сборка занимает время."],
+                ["Windows (MinGW + SDL2)","1. Установи MinGW-w64 и SDL2 (dev-версию).\n2. Команда (подбери под свои пути): g++ mechanic3d.cpp -O2 -o Mechanic3D.exe -lmingw32 -lSDL2main -lSDL2 -mwindows\n3. Положи SDL2.dll рядом с exe.\nЕсли g++ выдаст ошибку - пришли её текст, подберу команду."],
+                ["Android APK","Сборка через GitHub Actions по тому же шаблону, что у Zombie Siege (SDL2 android-project). Пока репозиторий не создан."]
+              ],
+              news:["Работа таксистом: смена, пассажиры, тариф, чаевые","Реалистичный разгон и торможение, старт с $500","Дорожные знаки, разметка, две полосы в каждую сторону","39 встроенных 3D-моделей и значки марок на всех"],
+              links:{web:"", itch:"", apk:"", win:"", repo:"", source:""},
+              notes:{repo:"Создай репозиторий (например mechanic-simulator) и загрузи туда mechanic3d.cpp и build.yml для APK.", win:"После сборки exe упакуй его вместе с SDL2.dll в zip и загрузи в GitHub Releases или на itch.io."}
+            }
+          ];
+
+          /* ====================== СОСТОЯНИЕ ====================== */
+          var STORE_KEY = "mysteam.links.v1";
+          var saved = {};
+          try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch (e) { saved = {}; }
+          function persist(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch (e) {} }
+          function getLink(g, t){ var s = saved[g.id]; if (s && typeof s[t] === "string") return s[t]; return g.links[t] || ""; }
+          function setLink(g, t, v){ if (!saved[g.id]) saved[g.id] = {}; saved[g.id][t] = v.trim(); persist(); }
+          function getPkg(g){ var s = saved[g.id]; return (s && typeof s.pkg === "string") ? s.pkg : g.pkg; }
+          function setPkg(g, v){ if (!saved[g.id]) saved[g.id] = {}; saved[g.id].pkg = v.trim(); persist(); }
+          function isUrl(v){ return /^https?:\/\/[^\s]+\.[^\s]+/i.test(v); }
+
+          var view = "store", curGame = "mechanic", subTab = "desc";
+          var NATIVE = (typeof Android !== "undefined");
+          var dl = {};                       // id -> {busy, pct, msg}: идущие загрузки
+          var CUSTOM_KEY = "mysteam.custom.v1", TOKEN_KEY = "mysteam.token";
+          function getToken(){ try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
+          function setToken(v){ try { localStorage.setItem(TOKEN_KEY, v.trim()); } catch (e) {} }
+          function makeCustom(c){
+            return { id:c.id, name:c.name, art:"generic", color:"#7a5cd1", short:"Моя игра", tags:["Моя игра"], platforms:["Android"], version:"-", size:"-", price:"Бесплатно", pkg:c.pkg||"",
+              desc:"Игра добавлена вручную. Укажи ссылку на APK (файл или GitHub-репозиторий с релизом) в разделе «Ссылки».", features:["Скачивание и установка прямо из приложения"], req:["Android"], howto:[["Установка","Нажми «Скачать и установить» и разреши установку из этого приложения."]], news:["Добавлена вручную"],
+              links:{web:"", itch:"", apk:c.apk||"", win:"", repo:"", source:""}, notes:{}, custom:true };
+          }
+          (function loadCustomGames(){ var arr = []; try { arr = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]"); } catch (e) { arr = []; } for (var i = 0; i < arr.length; i++) GAMES.push(makeCustom(arr[i])); })();
+          function saveCustom(){ var arr = []; for (var i = 0; i < GAMES.length; i++) if (GAMES[i].custom) arr.push({ id:GAMES[i].id, name:GAMES[i].name, apk:getLink(GAMES[i],"apk"), pkg:getPkg(GAMES[i]) }); try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(arr)); } catch (e) {} }
+          function addCustomGame(name, apk, pkg){ var g = makeCustom({ id:"c" + Date.now(), name:name, apk:apk, pkg:pkg }); GAMES.push(g); saveCustom(); return g; }
+          function removeCustomGame(id){ for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id && GAMES[i].custom) { GAMES.splice(i, 1); break; } saveCustom(); }
+
+          /* ====================== ХУДОЖЕСТВО ====================== */
+          function artSVG(kind, w, h){
+            var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">';
+            if (kind === "blocks") {
+              s += '<defs><linearGradient id="gb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b1d5a"/><stop offset="1" stop-color="#0f2a4d"/></linearGradient></defs><rect width="400" height="200" fill="url(#gb)"/>';
+              var cols = ["#e8a33a","#e0524f","#4bb3e0","#6cc24a","#a56ee0","#f0d23c"];
+              var pat = [[0,0,1,2,0,0,3,3],[0,1,1,2,2,0,0,3],[4,4,0,0,5,5,5,0],[4,0,0,3,3,0,5,0],[0,0,2,2,0,1,1,0]];
+              for (var r = 0; r < 5; r++) for (var c = 0; c < 8; c++) {
+                var v = pat[r][c]; if (!v && v !== 0) continue;
+                var on = (pat[r][c] > 0) || ((r + c) % 3 === 0 && r > 2);
+                s += '<rect x="'+(60+c*34)+'" y="'+(30+r*30)+'" width="30" height="26" rx="5" fill="'+(on?cols[(r*3+c)%cols.length]:"rgba(255,255,255,.07)")+'"/>';
+              }
+            } else if (kind === "zombie") {
+              s += '<defs><linearGradient id="gz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0c10"/><stop offset="1" stop-color="#0c0507"/></linearGradient></defs><rect width="400" height="200" fill="url(#gz)"/>';
+              s += '<circle cx="320" cy="46" r="26" fill="#e9d9a8" opacity=".9"/><circle cx="330" cy="40" r="22" fill="#2a0c10" opacity=".35"/>';
+              s += '<g fill="#12090b"><rect x="0" y="120" width="60" height="80"/><rect x="50" y="95" width="46" height="105"/><rect x="95" y="130" width="60" height="70"/><rect x="250" y="110" width="50" height="90"/><rect x="300" y="135" width="100" height="65"/></g>';
+              s += '<g><rect x="150" y="100" width="60" height="100" rx="6" fill="#1e3a24"/><circle cx="180" cy="86" r="26" fill="#3b6b43"/><circle cx="170" cy="82" r="5" fill="#ff3b3b"/><circle cx="192" cy="82" r="5" fill="#ff3b3b"/><rect x="168" y="98" width="26" height="5" fill="#1a0a0a"/></g>';
+              s += '<g stroke="#fff" stroke-width="2" opacity=".75"><line x1="180" y1="150" x2="180" y2="170"/><line x1="170" y1="160" x2="190" y2="160"/></g>';
+            } else if (kind === "generic") {
+              s += '<defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a2a7a"/><stop offset="1" stop-color="#142a52"/></linearGradient></defs><rect width="400" height="200" fill="url(#gg)"/><g fill="#c7d5e0" opacity=".85"><rect x="150" y="80" width="100" height="50" rx="22"/></g><g fill="#2a1f55"><rect x="172" y="98" width="26" height="6"/><rect x="182" y="88" width="6" height="26"/><circle cx="222" cy="96" r="5"/><circle cx="234" cy="108" r="5"/></g>';
+            } else {
+              s += '<defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a79c9"/><stop offset="1" stop-color="#173a62"/></linearGradient></defs><rect width="400" height="200" fill="url(#gc)"/>';
+              s += '<rect y="150" width="400" height="50" fill="#2a2f38"/><g fill="#e8c53a"><rect x="20" y="172" width="40" height="5"/><rect x="120" y="172" width="40" height="5"/><rect x="220" y="172" width="40" height="5"/><rect x="320" y="172" width="40" height="5"/></g>';
+              s += '<g><path d="M90 150 L100 120 Q110 100 140 98 L240 98 Q270 100 285 124 L300 150 Z" fill="#e8e8ee"/><path d="M118 118 L132 104 L200 104 L200 120 Z" fill="#1f3a5a"/><path d="M208 104 L244 104 L262 120 L208 120 Z" fill="#1f3a5a"/><circle cx="130" cy="152" r="17" fill="#15181d"/><circle cx="130" cy="152" r="8" fill="#9aa4b0"/><circle cx="262" cy="152" r="17" fill="#15181d"/><circle cx="262" cy="152" r="8" fill="#9aa4b0"/><rect x="150" y="82" width="64" height="16" rx="4" fill="#e8c53a"/><rect x="171" y="87" width="22" height="6" fill="#171a21"/></g>';
+              s += '<g fill="none" stroke="#e8c53a" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M330 40 L360 70"/><circle cx="322" cy="32" r="12"/></g>';
+            }
+            return s + '</svg>';
+          }
+
+          /* ====================== ВСПОМОГАТЕЛЬНОЕ ====================== */
+          function $(id){ return document.getElementById(id); }
+          function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+          function toast(msg){ var t = $("toast"); t.textContent = msg; t.className = "toast show"; clearTimeout(toast._t); toast._t = setTimeout(function(){ t.className = "toast"; }, 1800); }
+          function copyText(text, msg){
+            var done = function(){ toast(msg || "Скопировано"); };
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); }); return; }
+            } catch (e) {}
+            fallbackCopy(text); done();
+          }
+          function fallbackCopy(text){
+            var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            try { document.execCommand("copy"); } catch (e) {}
+            document.body.removeChild(ta);
+          }
+          function gameById(id){ for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id) return GAMES[i]; return GAMES[0]; }
+          function linkCount(g){ var n = 0; for (var i = 0; i < LINK_TYPES.length; i++) if (isUrl(getLink(g, LINK_TYPES[i][0]))) n++; return n; }
+
+          /* ====================== НАВИГАЦИЯ ====================== */
+          var TABS = [["store","Магазин"],["lib","Библиотека"],["links","Ссылки"],["launcher","Лаунчер"],["help","Как выложить"]];
+          function go(v, gid, sub){ view = v; if (gid) curGame = gid; if (sub) subTab = sub; render(); window.scrollTo(0, 0); }
+          function renderNav(){
+            var h = ""; for (var i = 0; i < TABS.length; i++) h += '<button class="'+(view===TABS[i][0]?"on":"")+'" data-v="'+TABS[i][0]+'">'+TABS[i][1]+'</button>';
+            $("nav").innerHTML = h;
+            var btns = $("nav").getElementsByTagName("button");
+            for (var j = 0; j < btns.length; j++) btns[j].onclick = function(){ go(this.getAttribute("data-v")); };
+            var tot = 0, ok = 0; for (var k = 0; k < GAMES.length; k++) { tot += LINK_TYPES.length; ok += linkCount(GAMES[k]); }
+            $("hdrinfo").textContent = GAMES.length + " игры · ссылок " + ok + "/" + tot;
+          }
+
+          /* ====================== МАГАЗИН ====================== */
+          function viewStore(){
+            var h = '<h2>Новое и популярное</h2><div class="grid">';
+            for (var i = 0; i < GAMES.length; i++) {
+              var g = GAMES[i];
+              h += '<div class="card" data-g="'+g.id+'"><div class="art">'+artSVG(g.art)+'</div><div class="body"><h3>'+esc(g.name)+'</h3><p>'+esc(g.short)+'</p>'
+                + '<div class="tags">'+g.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</div>'
+                + '<div class="plat">'+g.platforms.map(function(p){return '<i>'+esc(p)+'</i>';}).join("")+'</div><div class="price">'+esc(g.price)+'</div></div></div>';
+            }
+            h += '</div><div class="box" style="margin-top:16px"><h4>О магазине</h4><p style="margin:0;font-size:14px;line-height:1.5;color:var(--mut)">Это своя «копия Steam» для трёх игр: у каждой есть страница, описание, инструкции установки и кнопки со ссылками. Ссылки на APK заполняются в разделе «Ссылки»: в приложении кнопка «Скачать и установить» качает игру, ставит её и потом запускает.</p></div>';
+            $("main").innerHTML = h;
+            var cards = $("main").getElementsByClassName("card");
+            for (var c = 0; c < cards.length; c++) cards[c].onclick = function(){ go("lib", this.getAttribute("data-g"), "desc"); };
+          }
+
+          /* ====================== ФУНКЦИИ ПРИЛОЖЕНИЯ (Android) ====================== */
+          function gameInfo(g){ var pk = getPkg(g); if (!pk) return { installed:false }; try { return JSON.parse(Android.info(pk)); } catch (e) { return { installed:false }; } }
+          function nativeButtons(g){
+            var inf = gameInfo(g), apk = getLink(g, "apk"), d = dl[g.id], h = "";
+            if (d && d.busy) {
+              var bar = d.pct >= 0 ? '<div style="height:6px;background:#0d131c;border-radius:3px;margin-top:6px"><div style="height:6px;width:'+d.pct+'%;background:#5ba32b;border-radius:3px"></div></div>' : "";
+              return '<div class="btn off" style="flex:1;display:block">'+esc(d.msg || "Загрузка…")+(d.pct >= 0 ? " " + d.pct + "%" : "")+bar+'</div>';
+            }
+            if (inf.installed) {
+              h += '<button class="btn play" data-act="launch">▶ Играть</button>';
+              if (apk) h += '<button class="btn" data-act="update">⟳ Обновить</button>';
+              h += '<button class="btn off" data-act="remove">Удалить</button>';
+            } else if (apk) h += '<button class="btn play" data-act="install">⬇ Скачать и установить</button>';
+            else h += '<button class="btn off" data-need="apk">Нет ссылки на APK</button>';
+            if (inf.installed && inf.version) h += '<div class="hint" style="width:100%">Установлена версия: ' + esc(inf.version) + '</div>';
+            return h;
+          }
+          function otherLinks(g){
+            var h = '<div class="actions">';
+            for (var t = 0; t < LINK_TYPES.length; t++) { var key = LINK_TYPES[t][0], v = getLink(g, key); if (key === "apk" || key === "source" || key === "win" || !isUrl(v)) continue; h += '<a class="btn" href="'+esc(v)+'" target="_blank" rel="noopener">'+esc(LINK_TYPES[t][1])+'</a>'; }
+            return h + '</div>';
+          }
+          function doAct(g, a){
+            var pk = getPkg(g);
+            if (a === "install" || a === "update") {
+              var url = getLink(g, "apk"); if (!isUrl(url)) { toast("Нет ссылки на APK"); return; }
+              dl[g.id] = { busy:true, pct:-1, msg:"Подготовка…" }; render();
+              Android.download(g.id, url, getToken());
+            } else if (a === "launch") { if (!pk || !Android.launch(pk)) toast("Не удалось запустить игру"); }
+            else if (a === "remove") { if (pk) Android.uninstall(pk); }
+          }
+          window.onDl = function(id, pct, msg){ dl[id] = { busy:true, pct:pct, msg:msg }; if (view === "lib" && curGame === id) render(); };
+          window.onDlDone = function(id, ok, msg, pkg){
+            delete dl[id];
+            if (ok && pkg) { var g = gameById(id); setPkg(g, pkg); if (g.custom) saveCustom(); }
+            toast(msg || (ok ? "Готово" : "Ошибка"));
+            render();
+          };
+          window.onResumeApp = function(){ if (view === "lib" || view === "launcher") render(); };
+          window.handleBack = function(){ if (view !== "store") { go("store"); return true; } return false; };
+          if (NATIVE) document.addEventListener("click", function(e){
+            var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+            if (a && /^https?:/i.test(a.href)) { e.preventDefault(); Android.openUrl(a.href); }
+          }, true);
+
+          /* ====================== БИБЛИОТЕКА ====================== */
+          function viewLib(){
+            var g = gameById(curGame);
+            var h = '<div class="lib"><div class="libside">';
+            for (var i = 0; i < GAMES.length; i++) h += '<div class="item'+(GAMES[i].id===g.id?" on":"")+'" data-g="'+GAMES[i].id+'"><div class="dot" style="background:'+GAMES[i].color+'"></div>'+esc(GAMES[i].name)+'</div>';
+            h += '</div><div><div class="hero"><div class="art">'+artSVG(g.art)+'<div class="ttl">'+esc(g.name)+'</div></div><div class="info">';
+            h += '<div class="tags">'+g.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</div>';
+            h += '<div class="meta"><span>Версия: '+esc(g.version)+'</span><span>Размер: '+esc(g.size)+'</span><span>'+esc(g.price)+'</span></div>';
+            h += '<div class="plat">'+g.platforms.map(function(p){return '<i>'+esc(p)+'</i>';}).join("")+'</div><div class="actions">';
+            var first = true;
+            if (NATIVE) { h += nativeButtons(g); }
+            else for (var t = 0; t < LINK_TYPES.length; t++) {
+              var key = LINK_TYPES[t][0], v = getLink(g, key);
+              if (key === "source") continue;
+              if (isUrl(v)) { h += '<a class="btn'+(first?" play":"")+'" href="'+esc(v)+'" target="_blank" rel="noopener">'+(first?"▶ ":"")+esc(LINK_TYPES[t][1])+'</a>'; first = false; }
+              else h += '<button class="btn off" data-need="'+key+'">'+esc(LINK_TYPES[t][1])+' · нет ссылки</button>';
+            }
+            h += '</div>';
+            if (NATIVE) h += otherLinks(g);
+            h += '</div></div>';
+            h += '<div class="sub">'+[["desc","Описание"],["inst","Установка"],["news","Что нового"]].map(function(x){return '<button data-s="'+x[0]+'" class="'+(subTab===x[0]?"on":"")+'">'+x[1]+'</button>';}).join("")+'</div><div class="sec">';
+            if (subTab === "desc") {
+              h += '<p>'+esc(g.desc)+'</p><div class="box"><h4>Особенности</h4><ul>'+g.features.map(function(f){return '<li>'+esc(f)+'</li>';}).join("")+'</ul></div><div class="box"><h4>Системные требования</h4><ul>'+g.req.map(function(f){return '<li>'+esc(f)+'</li>';}).join("")+'</ul></div>';
+            } else if (subTab === "inst") {
+              for (var s = 0; s < g.howto.length; s++) h += '<div class="box"><h4>'+esc(g.howto[s][0])+'</h4><pre>'+esc(g.howto[s][1])+'</pre><div class="row"><button class="btn" data-copy="'+g.id+':'+s+'">Скопировать</button></div></div>';
+            } else {
+              h += '<div class="box"><h4>Журнал изменений</h4><ul>'+g.news.map(function(f){return '<li>'+esc(f)+'</li>';}).join("")+'</ul></div>';
+            }
+            h += '</div></div></div>';
+            $("main").innerHTML = h;
+            var its = $("main").getElementsByClassName("item");
+            for (var a = 0; a < its.length; a++) its[a].onclick = function(){ go("lib", this.getAttribute("data-g")); };
+            var sb = $("main").querySelectorAll(".sub button");
+            for (var b = 0; b < sb.length; b++) sb[b].onclick = function(){ subTab = this.getAttribute("data-s"); render(); };
+            var offs = $("main").querySelectorAll("[data-need]");
+            for (var o = 0; o < offs.length; o++) offs[o].onclick = function(){ toast("Ссылки нет - впиши её в разделе «Ссылки»"); go("links", g.id); };
+            var acts = $("main").querySelectorAll("[data-act]");
+            for (var a2 = 0; a2 < acts.length; a2++) acts[a2].onclick = function(){ doAct(g, this.getAttribute("data-act")); };
+            var cps = $("main").querySelectorAll("[data-copy]");
+            for (var c2 = 0; c2 < cps.length; c2++) cps[c2].onclick = function(){ var p = this.getAttribute("data-copy").split(":"); copyText(gameById(p[0]).howto[+p[1]][1], "Инструкция скопирована"); };
+          }
+
+          /* ====================== ССЫЛКИ ====================== */
+          function allLinksText(){
+            var out = [];
+            for (var i = 0; i < GAMES.length; i++) {
+              var g = GAMES[i]; out.push("== " + g.name + " ==");
+              for (var t = 0; t < LINK_TYPES.length; t++) { var v = getLink(g, LINK_TYPES[t][0]); out.push(LINK_TYPES[t][1] + ": " + (v || "(нет)")); }
+              out.push("");
+            }
+            return out.join("\n");
+          }
+          function viewLinks(){
+            var h = '<h2>Все ссылки</h2><p class="hint" style="margin:0 0 10px">Впиши ссылку, и кнопки на странице игры появятся сами. Данные хранятся в этом браузере. Зелёная точка - ссылка выглядит правильно, красная - не похоже на ссылку.</p>';
+            h += '<div class="box"><h4>Добавить свою игру</h4><div class="linkrow"><label>Название</label><input type="text" id="cgName" placeholder="Моя новая игра"><span></span></div><div class="linkrow"><label>APK или GitHub</label><input type="url" id="cgApk" placeholder="https://github.com/логин/репозиторий" inputmode="url"><span></span></div><div class="row"><button class="btn play" id="cgAdd">+ Добавить в библиотеку</button></div><p class="hint">В поле APK можно вставить ссылку на сам файл .apk или ссылку на GitHub-репозиторий: тогда приложение само возьмёт APK из последнего релиза.</p></div>';
+            h += '<div class="row"><button class="btn" id="copyAll">Скопировать все ссылки</button><button class="btn off" id="resetAll">Сбросить мои изменения</button></div>';
+            for (var i = 0; i < GAMES.length; i++) {
+              var g = GAMES[i];
+              h += '<div class="box" id="box-'+g.id+'"><h4>'+esc(g.name)+(g.custom?' <button class="btn off" style="padding:3px 8px;font-size:12px" data-del="'+g.id+'">убрать</button>':"")+'</h4>';
+              for (var t = 0; t < LINK_TYPES.length; t++) {
+                var key = LINK_TYPES[t][0], v = getLink(g, key), ok = isUrl(v);
+                h += '<div class="linkrow"><label>'+esc(LINK_TYPES[t][1])+'</label><input type="url" inputmode="url" placeholder="https://..." value="'+esc(v)+'" data-g="'+g.id+'" data-t="'+key+'"><span class="st '+(v?(ok?"ok":"bad"):"")+'"></span></div>';
+                if (g.notes && g.notes[key]) h += '<div class="hint">'+esc(g.notes[key])+'</div>';
+              }
+              h += '</div>';
+            }
+            $("main").innerHTML = h;
+            var inputs = $("main").querySelectorAll("input[data-g]");
+            for (var k = 0; k < inputs.length; k++) inputs[k].oninput = function(){
+              var g2 = gameById(this.getAttribute("data-g")); setLink(g2, this.getAttribute("data-t"), this.value);
+              var st = this.parentNode.getElementsByClassName("st")[0]; var vv = this.value.trim();
+              st.className = "st " + (vv ? (isUrl(vv) ? "ok" : "bad") : ""); if (g2.custom) saveCustom(); renderNav();
+            };
+            $("cgAdd").onclick = function(){ var n = $("cgName").value.trim(), u = $("cgApk").value.trim(); if (!n) { toast("Впиши название"); return; } var ng = addCustomGame(n, u, ""); if (u) { if (!saved[ng.id]) saved[ng.id] = {}; saved[ng.id].apk = u; persist(); } toast("Добавлено: " + n); curGame = ng.id; go("lib", ng.id); };
+            $("copyAll").onclick = function(){ copyText(allLinksText(), "Все ссылки скопированы"); };
+            $("resetAll").onclick = function(){ saved = {}; persist(); toast("Сброшено"); render(); };
+            var dels = $("main").querySelectorAll("[data-del]");
+            for (var dd = 0; dd < dels.length; dd++) dels[dd].onclick = function(){ removeCustomGame(this.getAttribute("data-del")); toast("Убрано"); render(); };
+          }
+
+          /* ====================== ЛАУНЧЕР ====================== */
+          function gamesJson(){
+            var arr = [];
+            for (var i = 0; i < GAMES.length; i++) {
+              var g = GAMES[i];
+              arr.push({ name: g.name, pkg: getPkg(g) || "", apk: getLink(g, "apk"), version: g.version === "в разработке" ? "0.1" : g.version });
+            }
+            return JSON.stringify(arr, null, 2);
+          }
+          function gameJsonFor(g){
+            var o = { name: g.name, version: g.version === "в разработке" ? "0.1" : g.version, description: g.short };
+            if (g.id === "blockblast") o.python = "block_blast_v3.py";
+            else o.exe = (g.id === "zombie" ? "ZombieSiege.exe" : "Mechanic3D.exe");
+            o.cover = "cover.png"; o.color = g.color;
+            return JSON.stringify(o, null, 2);
+          }
+          function viewLauncher(){
+            var h = '<h2>Настройки и лаунчер</h2>';
+            h += '<div class="box"><h4>Приложение</h4><p style="margin:0 0 6px;font-size:14px">'+(NATIVE?'Скачивание и установка игр работают прямо в этом приложении.':'Эта страница открыта в браузере: скачивание и установка работают только в приложении (APK).')+'</p><div class="linkrow"><label>GitHub-токен</label><input type="password" id="tok" placeholder="только для приватных репозиториев" value="'+esc(getToken())+'"><span class="st '+(getToken()?"ok":"")+'"></span></div><p class="hint">Нужен, если APK лежит в приватном репозитории (например Block Blast). Создай токен в GitHub: Settings → Developer settings → Personal access tokens, право на чтение содержимого (Contents: read). Токен хранится только на этом телефоне.</p></div>';
+            h += '<div class="box"><h4>1. Для APK-лаунчера (Android)</h4><p style="margin:0 0 6px;font-size:14px">В приложении «Мои игры» нажми «Список» и вставь ссылку на файл games.json. Package name каждой игры - это applicationId из сборки (после первой сборки APK узнаешь).</p>';
+            for (var i = 0; i < GAMES.length; i++) {
+              var g = GAMES[i];
+              h += '<div class="linkrow"><label>package: '+esc(g.name)+'</label><input type="text" placeholder="com.пример.игра" value="'+esc(getPkg(g))+'" data-pk="'+g.id+'"><span class="st '+(getPkg(g)?"ok":"")+'"></span></div>';
+            }
+            h += '<pre id="gj">'+esc(gamesJson())+'</pre><div class="row"><button class="btn play" id="cpj">Скопировать games.json</button></div>';
+            h += '<p class="hint">Положи этот текст в файл games.json в публичный репозиторий. Ссылка на «сырой» файл будет вида https://raw.githubusercontent.com/ТВОЙ_ЛОГИН/РЕПОЗИТОРИЙ/main/games.json - её и вставляй в приложении.</p></div>';
+            h += '<div class="box"><h4>2. Для Windows-лаунчера (launcher.py)</h4><p style="margin:0 0 6px;font-size:14px">Для каждой игры создай папку в games\\ и положи туда game.json (ниже) и файл игры.</p>';
+            for (var j = 0; j < GAMES.length; j++) {
+              var gg = GAMES[j];
+              h += '<p style="margin:10px 0 2px;font-size:13px;color:#fff">games\\'+(gg.id==="blockblast"?"BlockBlast":gg.id==="zombie"?"ZombieSiege":"Mechanic3D")+'\\game.json</p><pre>'+esc(gameJsonFor(gg))+'</pre><div class="row"><button class="btn" data-gj="'+gg.id+'">Скопировать</button></div>';
+            }
+            h += '</div>';
+            $("main").innerHTML = h;
+            if ($("tok")) $("tok").oninput = function(){ setToken(this.value); this.parentNode.getElementsByClassName("st")[0].className = "st " + (this.value.trim() ? "ok" : ""); };
+            var pk = $("main").querySelectorAll("[data-pk]");
+            for (var a = 0; a < pk.length; a++) pk[a].oninput = function(){ setPkg(gameById(this.getAttribute("data-pk")), this.value); $("gj").textContent = gamesJson(); this.parentNode.getElementsByClassName("st")[0].className = "st " + (this.value.trim() ? "ok" : ""); };
+            $("cpj").onclick = function(){ copyText(gamesJson(), "games.json скопирован"); };
+            var gjs = $("main").querySelectorAll("[data-gj]");
+            for (var b = 0; b < gjs.length; b++) gjs[b].onclick = function(){ copyText(gameJsonFor(gameById(this.getAttribute("data-gj"))), "game.json скопирован"); };
+          }
+
+          /* ====================== КАК ВЫЛОЖИТЬ ====================== */
+          function viewHelp(){
+            var h = '<h2>Как получить недостающие ссылки</h2>';
+            var steps = [
+              ["Ссылка на APK (для любой игры)", "1. Создай репозиторий на GitHub (можно приватный, но тогда ссылка работает только у тебя).\n2. Добавь файл .github/workflows/build.yml (для лаунчера он уже готов, для игр - шаблон SDL2 android-project).\n3. Actions → запусти сборку → внизу страницы Artifacts → скачай APK.\n4. Чтобы дать ссылку друзьям: Releases → Draft a new release → прикрепи APK → Publish. Ссылка на файл в релизе публичная (репозиторий должен быть публичным)."],
+              ["Ссылка на itch.io", "1. itch.io → Dashboard → Create new project.\n2. Для игры в браузере: загрузи zip с index.html и поставь «This file will be played in the browser». Для Android - загрузи APK, для Windows - zip с exe и SDL2.dll.\n3. Сохрани и опубликуй (Visibility: Public). Ссылка вида https://твой-логин.itch.io/название."],
+              ["Ссылка на Windows-версию", "1. Собери exe (см. «Установка» на странице игры).\n2. Положи exe и SDL2.dll в одну папку, сожми в zip.\n3. Загрузи zip в Releases на GitHub или на itch.io и скопируй ссылку на файл."],
+              ["Опубликовать эту страницу как свой магазин", "Положи этот файл как index.html в публичный репозиторий и включи Settings → Pages → Branch: main. Страница откроется по адресу https://твой-логин.github.io/репозиторий/. Заполненные ссылки хранятся в браузере каждого посетителя: чтобы они были у всех, впиши их прямо в код (блок «ДАННЫЕ ИГР», поле links)."]
+            ];
+            for (var i = 0; i < steps.length; i++) h += '<div class="box"><h4>'+esc(steps[i][0])+'</h4><pre>'+esc(steps[i][1])+'</pre></div>';
+            h += '<div class="box"><h4>Что уже известно</h4><div class="stats"><div class="stat"><b>2</b><span>ссылки заполнены</span></div><div class="stat"><b>3</b><span>игры в магазине</span></div><div class="stat"><b>0</b><span>ссылок на скачивание</span></div></div><p class="hint">Заполнены: itch.io профиль Block Blast и репозитории GitHub (Block Blast - приватный, Zombie Siege - для сборки APK). Для симулятора механика ссылок пока нет.</p></div>';
+            $("main").innerHTML = h;
+          }
+
+          /* ====================== ГЛАВНЫЙ РЕНДЕР ====================== */
+          function render(){
+            renderNav();
+            if (view === "store") viewStore(); else if (view === "lib") viewLib(); else if (view === "links") viewLinks(); else if (view === "launcher") viewLauncher(); else viewHelp();
+          }
+          render();
+          </script>
+          </body>
+          </html>
+
+          HTML_EOF
+
+          cat > app/src/main/java/com/mygames/launcher/MainActivity.java <<'JAVA_EOF'
+          package com.mygames.launcher;
+
+          import android.app.Activity;
+          import android.content.ClipData;
+          import android.content.ClipboardManager;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.content.pm.PackageInfo;
+          import android.net.Uri;
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.provider.Settings;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.Toast;
+          import androidx.core.content.FileProvider;
+          import org.json.JSONArray;
+          import org.json.JSONObject;
+          import java.io.ByteArrayOutputStream;
+          import java.io.File;
+          import java.io.FileOutputStream;
+          import java.io.InputStream;
+          import java.net.HttpURLConnection;
+          import java.net.URL;
+          import java.util.regex.Matcher;
+          import java.util.regex.Pattern;
+
+          public class MainActivity extends Activity {
+              private WebView web;
+              private File pendingApk = null;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  getWindow().setStatusBarColor(0xFF1B2838);
+                  getWindow().setNavigationBarColor(0xFF171A21);
+                  web = new WebView(this);
+                  web.setBackgroundColor(0xFF171A21);
+                  setContentView(web);
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setAllowFileAccess(true);
+                  s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                  web.addJavascriptInterface(new Bridge(), "Android");
+                  web.setWebViewClient(new WebViewClient());
+                  web.loadUrl("file:///android_asset/index.html");
+              }
+
+              @Override
+              protected void onResume() {
+                  super.onResume();
+                  if (pendingApk != null && canInstall()) {
+                      File f = pendingApk;
+                      pendingApk = null;
+                      installApk(f);
+                  }
+                  js("window.onResumeApp && window.onResumeApp()");
+              }
+
+              @Override
+              public void onBackPressed() {
+                  web.evaluateJavascript("(window.handleBack && window.handleBack()) ? '1' : '0'", value -> {
+                      if (value == null || !value.contains("1")) finish();
+                  });
+              }
+
+              private void js(final String code) {
+                  runOnUiThread(() -> web.evaluateJavascript(code, null));
+              }
+
+              private boolean canInstall() {
+                  return Build.VERSION.SDK_INT < 26 || getPackageManager().canRequestPackageInstalls();
+              }
+
+              private void installApk(File f) {
+                  if (!canInstall()) {
+                      pendingApk = f;
+                      Toast.makeText(this, "Разреши установку из этого приложения и вернись назад", Toast.LENGTH_LONG).show();
+                      startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName())));
+                      return;
+                  }
+                  try {
+                      Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", f);
+                      Intent i = new Intent(Intent.ACTION_VIEW);
+                      i.setDataAndType(uri, "application/vnd.android.package-archive");
+                      i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                      startActivity(i);
+                  } catch (Exception e) {
+                      Toast.makeText(this, "Не удалось открыть установщик: " + e, Toast.LENGTH_LONG).show();
+                  }
+              }
+
+              // ---------------- сеть ----------------
+              private static final Pattern GH = Pattern.compile("^https?://github\\.com/([^/\\s]+)/([^/\\s#?]+)(/releases(/latest)?)?/?$");
+
+              private HttpURLConnection open(String url, String accept, String token) throws Exception {
+                  String cur = url;
+                  boolean keepAuth = token != null && !token.isEmpty();
+                  for (int i = 0; i < 6; i++) {
+                      URL u = new URL(cur);
+                      HttpURLConnection c = (HttpURLConnection) u.openConnection();
+                      c.setInstanceFollowRedirects(false);
+                      c.setConnectTimeout(15000);
+                      c.setReadTimeout(30000);
+                      c.setRequestProperty("User-Agent", "MyGamesLauncher");
+                      if (accept != null && !accept.isEmpty()) c.setRequestProperty("Accept", accept);
+                      String host = u.getHost();
+                      if (keepAuth && (host.equals("api.github.com") || host.equals("github.com"))) {
+                          c.setRequestProperty("Authorization", "Bearer " + token);
+                      }
+                      int code = c.getResponseCode();
+                      if (code >= 300 && code < 400 && c.getHeaderField("Location") != null) {
+                          cur = new URL(u, c.getHeaderField("Location")).toString();
+                          c.disconnect();
+                          keepAuth = false;       // на другой хост токен не отправляем
+                          accept = null;
+                          continue;
+                      }
+                      if (code == 404) throw new Exception("не найдено (404). Если репозиторий приватный, укажи GitHub-токен в настройках");
+                      if (code == 401 || code == 403) throw new Exception("нет доступа (" + code + "). Проверь токен или лимит запросов GitHub");
+                      if (code != 200) throw new Exception("HTTP " + code);
+                      return c;
+                  }
+                  throw new Exception("слишком много перенаправлений");
+              }
+
+              private String httpText(String url, String token) throws Exception {
+                  HttpURLConnection c = open(url, "application/vnd.github+json", token);
+                  InputStream in = c.getInputStream();
+                  ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                  byte[] buf = new byte[8192];
+                  int n;
+                  long total = 0;
+                  while ((n = in.read(buf)) > 0) {
+                      bo.write(buf, 0, n);
+                      total += n;
+                      if (total > 3_000_000) throw new Exception("ответ слишком большой");
+                  }
+                  in.close();
+                  return bo.toString("UTF-8");
+              }
+
+              // для репозитория GitHub находим APK в последнем релизе; прямую ссылку возвращаем как есть
+              private String[] resolveApk(String url, String token) throws Exception {
+                  Matcher m = GH.matcher(url.trim());
+                  if (!m.find()) return new String[]{url.trim(), ""};
+                  String api = "https://api.github.com/repos/" + m.group(1) + "/" + m.group(2) + "/releases/latest";
+                  JSONObject rel = new JSONObject(httpText(api, token));
+                  JSONArray assets = rel.optJSONArray("assets");
+                  if (assets == null || assets.length() == 0) throw new Exception("в последнем релизе нет файлов");
+                  JSONObject pick = null;
+                  for (int i = 0; i < assets.length(); i++) {
+                      JSONObject a = assets.getJSONObject(i);
+                      if (a.optString("name").toLowerCase().endsWith(".apk")) { pick = a; break; }
+                  }
+                  if (pick == null) throw new Exception("в последнем релизе нет файла .apk");
+                  if (token != null && !token.isEmpty()) return new String[]{pick.getString("url"), "application/octet-stream"};
+                  return new String[]{pick.getString("browser_download_url"), ""};
+              }
+
+              // ---------------- мост для страницы ----------------
+              public class Bridge {
+                  @JavascriptInterface
+                  public String info(String pkg) {
+                      if (pkg == null || pkg.isEmpty()) return "{\"installed\":false}";
+                      try {
+                          PackageInfo p = getPackageManager().getPackageInfo(pkg, 0);
+                          JSONObject o = new JSONObject();
+                          o.put("installed", true);
+                          o.put("version", p.versionName == null ? "" : p.versionName);
+                          return o.toString();
+                      } catch (Exception e) {
+                          return "{\"installed\":false}";
+                      }
+                  }
+
+                  @JavascriptInterface
+                  public boolean launch(String pkg) {
+                      try {
+                          Intent it = getPackageManager().getLaunchIntentForPackage(pkg);
+                          if (it == null) return false;
+                          it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                          startActivity(it);
+                          return true;
+                      } catch (Exception e) {
+                          return false;
+                      }
+                  }
+
+                  @JavascriptInterface
+                  public void uninstall(final String pkg) {
+                      runOnUiThread(() -> startActivity(new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + pkg))));
+                  }
+
+                  @JavascriptInterface
+                  public void openUrl(final String url) {
+                      runOnUiThread(() -> {
+                          try {
+                              startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                          } catch (Exception e) {
+                              Toast.makeText(MainActivity.this, "Не удалось открыть ссылку", Toast.LENGTH_SHORT).show();
+                          }
+                      });
+                  }
+
+                  @JavascriptInterface
+                  public void copy(final String text) {
+                      runOnUiThread(() -> {
+                          ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                          cm.setPrimaryClip(ClipData.newPlainText("text", text));
+                      });
+                  }
+
+                  @JavascriptInterface
+                  public void download(final String id, final String url, final String token) {
+                      new Thread(() -> doDownload(id, url, token)).start();
+                  }
+              }
+
+              private void doDownload(String id, String url, String token) {
+                  final String jid = JSONObject.quote(id);
+                  try {
+                      js("window.onDl(" + jid + ",-1," + JSONObject.quote("Ищем файл…") + ")");
+                      String[] r = resolveApk(url, token);
+                      File dir = new File(getExternalFilesDir(null), "apk");
+                      dir.mkdirs();
+                      File out = new File(dir, id.replaceAll("[^A-Za-z0-9_]", "_") + ".apk");
+                      HttpURLConnection c = open(r[0], r[1], r[1].isEmpty() ? "" : token);
+                      long total = c.getContentLength();
+                      InputStream in = c.getInputStream();
+                      FileOutputStream fo = new FileOutputStream(out);
+                      byte[] buf = new byte[65536];
+                      long done = 0;
+                      int n, last = -1;
+                      while ((n = in.read(buf)) > 0) {
+                          fo.write(buf, 0, n);
+                          done += n;
+                          if (total > 0) {
+                              int pct = (int) (done * 100 / total);
+                              if (pct != last) {
+                                  last = pct;
+                                  js("window.onDl(" + jid + "," + pct + "," + JSONObject.quote("Загрузка…") + ")");
+                              }
+                          }
+                      }
+                      fo.close();
+                      in.close();
+                      PackageInfo pi = getPackageManager().getPackageArchiveInfo(out.getAbsolutePath(), 0);
+                      if (pi == null) {
+                          out.delete();
+                          throw new Exception("скачанный файл не похож на APK (для приватного репозитория нужен токен)");
+                      }
+                      final File apk = out;
+                      js("window.onDlDone(" + jid + ",true," + JSONObject.quote("Установка запущена") + "," + JSONObject.quote(pi.packageName) + ")");
+                      runOnUiThread(() -> installApk(apk));
+                  } catch (Exception e) {
+                      js("window.onDlDone(" + jid + ",false," + JSONObject.quote("Ошибка загрузки: " + e.getMessage()) + ",\"\")");
+                  }
+              }
+          }
+
+          JAVA_EOF
+
+      - name: Build APK
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Prepare file name
+        run: cp app/build/outputs/apk/debug/app-debug.apk MoiSteam.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moi-steam-apk
+          path: MoiSteam.apk
+
+      - name: Publish release (APK for download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: launcher-${{ github.run_number }}
+          name: Мой Steam (сборка ${{ github.run_number }})
+          files: MoiSteam.apk
