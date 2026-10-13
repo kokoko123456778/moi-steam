@@ -1215,7 +1215,7 @@ jobs:
               id:"blockblast", name:"Block Blast", art:"blocks", color:"#e8a33a",
               short:"Головоломка: ставь фигуры на поле и собирай линии.",
               tags:["Головоломка","Казуальная","Один игрок","pygame"],
-              platforms:["Android","Web","Windows"], version:"3.0", size:"≈ 380 КБ (один файл .py)", price:"Бесплатно", pkg:"",
+              platforms:["Android","Web","Windows"], version:"3.0", size:"≈ 380 КБ (один файл .py)", price:"Бесплатно", pkg:"com.blockblast",
               desc:"Block Blast на pygame: перетаскивай фигуры пальцем на поле 8×8, собирай целые линии и набирай очки. Игра сделана одним файлом для Pydroid 3 на Android и для компьютера. Сохранения лежат в папке block_blast_data рядом с файлом.",
               features:["Один файл block_blast_v3.py - ничего больше копировать не нужно","Управление пальцем: перетаскивание фигур, «Назад» - пауза","Экономия батареи: 60 кадров в секунду в игре и 30, когда ничего не двигается","Защита от «прыжка времени» после сворачивания","Работает на Android (Pydroid 3) и на ПК (Python 3.9+)"],
               req:["Android: Pydroid 3 и пакет pygame (Pip → pygame → Install)","ПК: Python 3.9 или новее и pygame (pip install pygame)"],
@@ -1225,14 +1225,14 @@ jobs:
                 ["Android APK","APK собирается через GitHub Actions в репозитории с игрой. Скачай app-debug.apk из Actions → Artifacts или из Releases и поставь (разреши установку из этого источника)."]
               ],
               news:["v3: однофайловая версия для Pydroid 3 и ПК","Веб-версия выложена на itch.io","APK собирается через GitHub Actions"],
-              links:{web:"https://block-blast1.itch.io", itch:"https://block-blast1.itch.io", apk:"https://github.com/vladionin63-tech/-block-blast", win:"", repo:"https://github.com/vladionin63-tech/-block-blast", source:""},
-              notes:{repo:"Репозиторий приватный: ссылка откроется только у тебя (после входа в GitHub).", web:"Это страница профиля на itch.io. Если у игры своя страница - впиши её полную ссылку."}
+              links:{web:"https://block-blast1.itch.io", itch:"https://block-blast1.itch.io", apk:"https://github.com/kokoko123456778/block-blast", win:"", repo:"https://github.com/kokoko123456778/block-blast", source:""},
+              notes:{repo:"Репозиторий для сборки APK (Buildozer) через GitHub Actions.", web:"Это страница профиля на itch.io. Если у игры своя страница - впиши её полную ссылку."}
             },
             {
               id:"zombie", name:"Zombie Siege 3D", art:"zombie", color:"#c0392b",
               short:"Кооперативное выживание против зомби с 3D-рейкастингом.",
               tags:["Шутер","Выживание","Кооператив","C++ / SDL2"],
-              platforms:["Android","Windows"], version:"17", size:"≈ 340 КБ (один файл .cpp)", price:"Бесплатно", pkg:"",
+              platforms:["Android","Windows"], version:"17", size:"≈ 340 КБ (один файл .cpp)", price:"Бесплатно", pkg:"com.kokoko.zombiesiege",
               desc:"Zombie Siege 3D на C++ и SDL2: кооперативное выживание против зомби, рейкастинг-3D, прокачка и баррикады. Играть вместе можно по одной Wi-Fi сети или через точку доступа: один создаёт игру, остальные присоединяются по тапу или вводом IP. Левым пальцем ходишь, правым крутишь камеру.",
               features:["Кооператив: СОЗДАТЬ ИГРУ / ПРИСОЕДИНИТЬСЯ (Wi-Fi или точка доступа, вход по IP)","Ящики на карте ломаются стрельбой (50 HP): 70% пусто, 25% лом, 5% оружие и аптечка","Гранаты (взрыв до 260 урона в радиусе 3,4) и оглушение (все зомби замирают на 5 с)","Магазин: оружие и аптечки за лом (в одиночной игре время на паузе)","Кнопки: огонь, авто, строй (баррикада и ремонт), заряд, смена, старт, магазин","Настройки: расположение кнопок (перетаскивай), режим левши, размер кнопок, графика","На ПК: WASD или стрелки, Q/E, пробел, B, R, Tab, Enter, M (магазин), G/H (гранаты)"],
               req:["Android: Cxxdroid (Меню → Install Libraries → SDL2)","ПК: компилятор C++ и SDL2 (MinGW на Windows)"],
@@ -1249,17 +1249,17 @@ jobs:
               id:"mechanic", name:"Симулятор механика 3D", art:"car", color:"#2f7fd1",
               short:"Автомастерская с открытым миром: чини, покупай, продавай и вози пассажиров.",
               tags:["Симулятор","Открытый мир","Машины","C++ / SDL"],
-              platforms:["Windows","Android"], version:"в разработке", size:"≈ 4,6 МБ (один файл .cpp)", price:"Бесплатно", pkg:"",
+              platforms:["Windows","Android"], version:"в разработке", size:"≈ 13 МБ (один файл .cpp)", price:"Бесплатно", pkg:"com.kokoko.mechanic3d",
               desc:"3D-игра про автомеханика: мастерская, мойка, заправка и открытый город. Покупай и продавай машины, меняй детали, бери заказы клиентов, вызывай эвакуатор и работай таксистом. Вместо упрощённых моделей - больше 35 реальных 3D-машин с значками марок, дорожная разметка и знаки, реалистичный разгон и торможение. Старт с $500.",
               features:["Больше 35 реальных 3D-моделей (Тойота, БМВ, Ауди, Порше, Феррари, Форд, Киа, Мини, Мазда и другие), значки марок на капоте","Мастерская, мойка, заправка, замена масла и деталей","Заказы клиентов, эвакуатор и работа таксистом (смена, пассажиры, тариф, чаевые, штрафы за аварии)","Город с двумя полосами в каждую сторону, зебры, стоп-линии и десять видов дорожных знаков","Реалистичная физика: разгон по кривой, торможение около 1 g, накат","Горизонтальный экран, плашка FPS и автоподстройка качества под слабый телефон","Старт с $500"],
               req:["Android: ccdroid (C4droid) и SDL","ПК: компилятор C++ и SDL2 (MinGW на Windows)"],
               howto:[
                 ["Android (ccdroid)","Открой mechanic3d.cpp в ccdroid и нажми Run. Файл большой (около 4,6 МБ), первая сборка занимает время."],
                 ["Windows (MinGW + SDL2)","1. Установи MinGW-w64 и SDL2 (dev-версию).\n2. Команда (подбери под свои пути): g++ mechanic3d.cpp -O2 -o Mechanic3D.exe -lmingw32 -lSDL2main -lSDL2 -mwindows\n3. Положи SDL2.dll рядом с exe.\nЕсли g++ выдаст ошибку - пришли её текст, подберу команду."],
-                ["Android APK","Сборка через GitHub Actions по тому же шаблону, что у Zombie Siege (SDL2 android-project). Пока репозиторий не создан."]
+                ["Android APK","APK собирается через GitHub Actions в репозитории mechanic-simulator и ставится кнопкой «Скачать» в Игротеке."]
               ],
               news:["Работа таксистом: смена, пассажиры, тариф, чаевые","Реалистичный разгон и торможение, старт с $500","Дорожные знаки, разметка, две полосы в каждую сторону","39 встроенных 3D-моделей и значки марок на всех"],
-              links:{web:"", itch:"", apk:"", win:"", repo:"", source:""},
+              links:{web:"", itch:"", apk:"https://github.com/kokoko123456778/mechanic-simulator", win:"", repo:"https://github.com/kokoko123456778/mechanic-simulator", source:""},
               notes:{repo:"Создай репозиторий (например mechanic-simulator) и загрузи туда mechanic3d.cpp и build.yml для APK.", win:"После сборки exe упакуй его вместе с SDL2.dll в zip и загрузи в GitHub Releases или на itch.io."}
             }
           ];
@@ -1295,12 +1295,155 @@ jobs:
           function makeCustom(c){
             return { id:c.id, name:c.name, art:"generic", color:"#7a5cd1", short:"Моя игра", tags:["Моя игра"], platforms:["Android"], version:"-", size:"-", price:"Бесплатно", pkg:c.pkg||"",
               desc:"Игра добавлена вручную. Укажи ссылку на APK (файл или GitHub-репозиторий с релизом) в разделе «Ссылки».", features:["Скачивание и установка прямо из приложения"], req:["Android"], howto:[["Установка","Нажми «Скачать и установить» и разреши установку из этого приложения."]], news:["Добавлена вручную"],
-              links:{web:"", itch:"", apk:c.apk||"", win:"", repo:"", source:""}, notes:{}, custom:true };
+              links:{web:"", itch:"", apk:c.apk||"", win:"", repo:"", source:""}, notes:{}, custom:true, repo:c.repo||"", path:c.path||"", kind:c.kind||"" };
           }
           (function loadCustomGames(){ var arr = []; try { arr = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]"); } catch (e) { arr = []; } for (var i = 0; i < arr.length; i++) GAMES.push(makeCustom(arr[i])); })();
-          function saveCustom(){ var arr = []; for (var i = 0; i < GAMES.length; i++) if (GAMES[i].custom) arr.push({ id:GAMES[i].id, name:GAMES[i].name, apk:getLink(GAMES[i],"apk"), pkg:getPkg(GAMES[i]) }); try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(arr)); } catch (e) {} }
+          function saveCustom(){ var arr = []; for (var i = 0; i < GAMES.length; i++) if (GAMES[i].custom) arr.push({ id:GAMES[i].id, name:GAMES[i].name, apk:getLink(GAMES[i],"apk"), pkg:getPkg(GAMES[i]), repo:GAMES[i].repo||"", path:GAMES[i].path||"", kind:GAMES[i].kind||"" }); try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(arr)); } catch (e) {} }
           function addCustomGame(name, apk, pkg){ var g = makeCustom({ id:"c" + Date.now(), name:name, apk:apk, pkg:pkg }); GAMES.push(g); saveCustom(); return g; }
           function removeCustomGame(id){ for (var i = 0; i < GAMES.length; i++) if (GAMES[i].id === id && GAMES[i].custom) { GAMES.splice(i, 1); break; } saveCustom(); }
+
+          /* ====================== НОВАЯ ИГРА ИЗ ФАЙЛА ====================== */
+          var BUILD_T = {"cpp": "name: build-apk\n\n# Создано «Игротекой». Собирает APK игры (C++ и SDL2) и публикует его в Releases.\non:\n  push:\n    branches: [ main, master ]\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\nenv:\n  APP_ID: __APP_ID__\n  APP_LABEL: __APP_NAME__\n  APK_NAME: Game.apk\n  JNI_NAME: game\n\nconcurrency:\n  group: build-apk\n  cancel-in-progress: true\n\njobs:\n  build-apk:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          repository: libsdl-org/SDL\n          ref: SDL2\n          path: SDL\n\n      - uses: actions/checkout@v4\n        with:\n          path: game\n          fetch-depth: 0\n\n      - name: Prepare SDL android project\n        run: |\n          cd SDL/android-project\n          ln -sfn ../../../ app/jni/SDL\n          ls -la app/jni/SDL\n          # берём тот файл .cpp, который загружали последним (по времени коммита), номер в имени не важен\n          BEST=0; SRC=\"\"\n          for f in ../../game/*.cpp; do\n            T=$(git -C ../../game log -1 --format=%ct -- \"$(basename \"$f\")\")\n            if [ \"${T:-0}\" -ge \"$BEST\" ]; then BEST=${T:-0}; SRC=\"$f\"; fi\n          done\n          echo \"Файл игры: $SRC\"\n          cp \"$SRC\" app/jni/src/$JNI_NAME.cpp\n          # заголовки SDL лежат в SDL/include/SDL.h, а игра подключает \u003cSDL2/SDL.h>: приводим к одному виду\n          sed -i 's#\u003cSDL2/#\u003c#g' app/jni/src/$JNI_NAME.cpp\n          sed -i \"s/LOCAL_SRC_FILES := YourSourceHere.c/LOCAL_SRC_FILES := $JNI_NAME.cpp/\" app/jni/src/Android.mk\n          sed -i '/LOCAL_SRC_FILES/a LOCAL_CPPFLAGS := -std=c++14 -Wno-narrowing -fexceptions' app/jni/src/Android.mk\n          # игре нужны исключения C++ (try/catch), в NDK они по умолчанию выключены\n          sed -i '/LOCAL_CPPFLAGS/a LOCAL_CPP_FEATURES := exceptions rtti' app/jni/src/Android.mk\n          printf 'APP_STL := c++_shared\\nAPP_PLATFORM := android-21\\n' > app/jni/Application.mk\n          MANIFEST=app/src/main/AndroidManifest.xml\n          sed -i 's#\u003capplication#\u003cuses-permission android:name=\"android.permission.INTERNET\" />\\n    \u003cuses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />\\n    \u003cuses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\\n\\n    \u003capplication#' \"$MANIFEST\"\n          sed -i 's#\u003cactivity #\u003cactivity android:screenOrientation=\"__ORIENT__\" #' \"$MANIFEST\"\n          # своё имя и свой идентификатор приложения, чтобы игры не затирали друг друга на телефоне\n          sed -i -E \"s#applicationId ['\\\"]org\\.libsdl\\.app['\\\"]#applicationId \\\"$APP_ID\\\"#\" app/build.gradle\n          # в шаблоне SDL нет applicationId (он берётся из namespace org.libsdl.app, и все игры получались одним приложением): задаём свой\n          grep -q applicationId app/build.gradle || sed -i \"0,/defaultConfig {/s//defaultConfig {\\n        applicationId \\\"$APP_ID\\\"/\" app/build.gradle\n          sed -i -E \"s#(\u003cstring name=\\\"app_name\\\">)[^\u003c]*(\u003c/string>)#\\1$APP_LABEL\\2#\" app/src/main/res/values/strings.xml\n          # рисовать на весь экран, в том числе под вырезом камеры (иначе справа остаётся чёрная полоса)\n          ACT=app/src/main/java/org/libsdl/app/SDLActivity.java\n          [ -f \"$ACT\" ] && sed -i '0,/super.onCreate(savedInstanceState);/s//super.onCreate(savedInstanceState);\\n        if (android.os.Build.VERSION.SDK_INT >= 28) { getWindow().getAttributes().layoutInDisplayCutoutMode = 1; }/' \"$ACT\"\n          grep -n \"layoutInDisplayCutoutMode\" \"$ACT\" || echo \"cutout patch NOT applied\"\n          # тема с «заходом» под вырез камеры (в ландшафте иначе справа остаётся чёрная полоса)\n          mkdir -p app/src/main/res/values\n          cat > app/src/main/res/values/cutout.xml \u003c\u003c'XEOF'\n          \u003c?xml version=\"1.0\" encoding=\"utf-8\"?>\n          \u003cresources>\n            \u003cstyle name=\"GameTheme\" parent=\"@android:style/Theme.NoTitleBar.Fullscreen\">\n              \u003citem name=\"android:windowLayoutInDisplayCutoutMode\">shortEdges\u003c/item>\n            \u003c/style>\n          \u003c/resources>\n          XEOF\n          sed -i -E 's#android:theme=\"[^\"]*\"#android:theme=\"@style/GameTheme\"#' \"$MANIFEST\"\n          grep -n \"android:theme\" \"$MANIFEST\" || echo \"ТЕМА НЕ НАЙДЕНА В МАНИФЕСТЕ\"\n          echo \"----- Android.mk -----\"; cat app/jni/src/Android.mk\n          echo \"----- Application.mk -----\"; cat app/jni/Application.mk\n          echo \"----- applicationId -----\"; grep -n applicationId app/build.gradle || true\n\n__ICON_STEP__      - uses: actions/setup-java@v4\n        with:\n          distribution: temurin\n          java-version: 17\n\n      - name: Install NDK\n        run: |\n          SDKMGR=$(find \"$ANDROID_SDK_ROOT/cmdline-tools\" -name sdkmanager -type f | head -n 1)\n          echo \"sdkmanager: $SDKMGR\"\n          yes | \"$SDKMGR\" --licenses --sdk_root=\"$ANDROID_SDK_ROOT\" >/dev/null || true\n          yes | \"$SDKMGR\" --install \"ndk;26.1.10909125\" --sdk_root=\"$ANDROID_SDK_ROOT\"\n          echo \"ndk.dir=$ANDROID_SDK_ROOT/ndk/26.1.10909125\" >> SDL/android-project/local.properties\n\n      - name: Signing key (one key for all builds, so updates install over old versions)\n        run: |\n          base64 -d > SDL/android-project/game.keystore \u003c\u003c'KEYSTORE_EOF'\n          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\n          5UOmK2sCAicQ\n          KEYSTORE_EOF\n\n      - name: Build APK\n        working-directory: SDL/android-project\n        run: |\n          chmod +x gradlew\n          ./gradlew assembleDebug --stacktrace \\\n            -Pandroid.injected.signing.store.file=\"$PWD/game.keystore\" \\\n            -Pandroid.injected.signing.store.password=mygames123 \\\n            -Pandroid.injected.signing.key.alias=mygames \\\n            -Pandroid.injected.signing.key.password=mygames123\n\n      - name: Name the APK\n        run: cp SDL/android-project/app/build/outputs/apk/debug/*.apk \"$APK_NAME\"\n\n      - uses: actions/upload-artifact@v4\n        with:\n          name: apk\n          path: ${{ env.APK_NAME }}\n\n      - name: Publish release (APK for the Steam app)\n        uses: softprops/action-gh-release@v2\n        with:\n          tag_name: v${{ github.run_number }}\n          name: ${{ env.APP_LABEL }} (сборка ${{ github.run_number }})\n          files: ${{ env.APK_NAME }}\n", "html": "name: build-apk\n\n# Создано «Игротекой». Собирает Android-приложение из index.html (игра на HTML5) и выкладывает APK в Releases.\non:\n  push:\n    branches: [ main, master ]\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\nenv:\n  APP_ID: __APP_ID__\n  APP_NAME: __APP_NAME__\n\nconcurrency:\n  group: build-apk\n  cancel-in-progress: true\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - uses: actions/setup-java@v4\n        with:\n          distribution: temurin\n          java-version: '17'\n\n      - uses: android-actions/setup-android@v3\n        with:\n          packages: 'platform-tools'\n\n      - uses: gradle/actions/setup-gradle@v3\n        with:\n          gradle-version: '8.5'\n\n      - name: Create project files\n        run: |\n          set -e\n          if [ ! -f index.html ]; then echo \"Нет файла index.html в репозитории\"; exit 1; fi\n          mkdir -p app/src/main/java/com/kokoko/game app/src/main/assets\n          mkdir -p app/src/main/res/mipmap-mdpi app/src/main/res/mipmap-hdpi app/src/main/res/mipmap-xhdpi app/src/main/res/mipmap-xxhdpi app/src/main/res/mipmap-xxxhdpi\n          cp index.html app/src/main/assets/index.html\n__ICONS_HTML__          base64 -d > app/game.keystore \u003c\u003c'KEYSTORE_EOF'\n          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\n          KEYSTORE_EOF\n          cat > settings.gradle \u003c\u003c'SETTINGS_EOF'\n          pluginManagement {\n              repositories {\n                  google()\n                  mavenCentral()\n                  gradlePluginPortal()\n              }\n          }\n          dependencyResolutionManagement {\n              repositories {\n                  google()\n                  mavenCentral()\n              }\n          }\n          rootProject.name = \"Game\"\n          include ':app'\n          SETTINGS_EOF\n\n          cat > build.gradle \u003c\u003c'ROOT_EOF'\n          plugins {\n              id 'com.android.application' version '8.2.2' apply false\n          }\n          ROOT_EOF\n\n          cat > gradle.properties \u003c\u003c'PROPS_EOF'\n          android.useAndroidX=true\n          org.gradle.jvmargs=-Xmx2g\n          PROPS_EOF\n\n          cat > app/build.gradle \u003c\u003cAPP_EOF\n          plugins {\n              id 'com.android.application'\n          }\n          android {\n              namespace 'com.kokoko.game'\n              compileSdk 34\n              defaultConfig {\n                  applicationId '${APP_ID}'\n                  minSdk 21\n                  targetSdk 34\n                  versionCode ${GITHUB_RUN_NUMBER}\n                  versionName '1.${GITHUB_RUN_NUMBER}'\n              }\n              signingConfigs {\n                  mygames {\n                      storeFile file('game.keystore')\n                      storePassword 'mygames123'\n                      keyAlias 'mygames'\n                      keyPassword 'mygames123'\n                  }\n              }\n              buildTypes {\n                  debug {\n                      signingConfig signingConfigs.mygames\n                  }\n              }\n              compileOptions {\n                  sourceCompatibility JavaVersion.VERSION_17\n                  targetCompatibility JavaVersion.VERSION_17\n              }\n          }\n          APP_EOF\n\n          cat > app/src/main/AndroidManifest.xml \u003c\u003cMANIFEST_EOF\n          \u003c?xml version=\"1.0\" encoding=\"utf-8\"?>\n          \u003cmanifest xmlns:android=\"http://schemas.android.com/apk/res/android\">\n              \u003capplication\n                  android:label=\"${APP_NAME}\"\n                  android:icon=\"@mipmap/ic_launcher\"\n                  android:roundIcon=\"@mipmap/ic_launcher\"\n                  android:allowBackup=\"true\"\n                  android:hardwareAccelerated=\"true\"\n                  android:theme=\"@android:style/Theme.Material.NoActionBar.Fullscreen\">\n                  \u003cactivity\n                      android:name=\".MainActivity\"\n                      android:exported=\"true\"\n                      android:screenOrientation=\"__ORIENT__\"\n                      android:configChanges=\"orientation|screenSize|keyboardHidden\">\n                      \u003cintent-filter>\n                          \u003caction android:name=\"android.intent.action.MAIN\" />\n                          \u003ccategory android:name=\"android.intent.category.LAUNCHER\" />\n                      \u003c/intent-filter>\n                  \u003c/activity>\n              \u003c/application>\n          \u003c/manifest>\n          MANIFEST_EOF\n\n          cat > app/src/main/java/com/kokoko/game/MainActivity.java \u003c\u003c'JAVA_EOF'\n          package com.kokoko.game;\n\n          import android.app.Activity;\n          import android.os.Build;\n          import android.os.Bundle;\n          import android.view.View;\n          import android.view.WindowManager;\n          import android.webkit.WebSettings;\n          import android.webkit.WebView;\n          import android.webkit.WebViewClient;\n\n          public class MainActivity extends Activity {\n              private WebView web;\n\n              @Override\n              protected void onCreate(Bundle savedInstanceState) {\n                  super.onCreate(savedInstanceState);\n                  getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);\n                  if (Build.VERSION.SDK_INT >= 28) {\n                      getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;\n                  }\n                  web = new WebView(this);\n                  web.setBackgroundColor(0xFF000000);\n                  setContentView(web);\n                  WebSettings s = web.getSettings();\n                  s.setJavaScriptEnabled(true);\n                  s.setDomStorageEnabled(true);\n                  s.setMediaPlaybackRequiresUserGesture(false);\n                  web.setWebViewClient(new WebViewClient());\n                  web.loadUrl(\"file:///android_asset/index.html\");\n                  hideBars();\n              }\n\n              private void hideBars() {\n                  getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION\n                      | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE\n                      | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);\n              }\n\n              @Override\n              public void onWindowFocusChanged(boolean hasFocus) {\n                  super.onWindowFocusChanged(hasFocus);\n                  if (hasFocus) hideBars();\n              }\n\n              @Override\n              protected void onPause() {\n                  super.onPause();\n                  if (web != null) { web.evaluateJavascript(\"window.dispatchEvent(new Event('pagehide'))\", null); web.onPause(); }\n              }\n\n              @Override\n              protected void onResume() {\n                  super.onResume();\n                  if (web != null) web.onResume();\n              }\n          }\n          JAVA_EOF\n\n      - name: Build APK\n        run: gradle assembleDebug --no-daemon --stacktrace\n\n      - name: Prepare file name\n        run: cp app/build/outputs/apk/debug/app-debug.apk Game.apk\n\n      - uses: actions/upload-artifact@v4\n        with:\n          name: game-apk\n          path: Game.apk\n\n      - name: Publish release (APK for Игротека)\n        uses: softprops/action-gh-release@v2\n        with:\n          tag_name: v${{ github.run_number }}\n          name: ${{ env.APP_NAME }} (сборка ${{ github.run_number }})\n          files: Game.apk\n", "py": "name: build-apk\n\n# Создано «Игротекой». Собирает APK игры на pygame через Buildozer и публикует его в Releases. Сборка идёт 20-30 минут.\non:\n  push:\n    branches: [ main, master ]\n  workflow_dispatch:\n\npermissions:\n  contents: write\n\nenv:\n  APP_TITLE: __APP_NAME__\n  APP_NAME: __PKG_NAME__\n  APP_DOMAIN: com.kokoko\n  APP_VERSION: \"1.0\"\n  APK_NAME: Game.apk\n\nconcurrency:\n  group: build-apk\n  cancel-in-progress: true\n\njobs:\n  build-apk:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - uses: actions/setup-python@v5\n        with:\n          python-version: '3.10'\n\n      - name: System packages\n        run: |\n          sudo apt-get update\n          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf automake autoconf-archive libtool libltdl-dev pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev\n\n      - name: Prepare the game (main.py and buildozer.spec)\n        run: |\n          SRC=$(ls -1 *.py | grep -v '^main.py$' | sort -V | tail -n 1)\n          if [ -z \"$SRC\" ]; then SRC=main.py; fi\n          echo \"Файл игры: $SRC\"\n          [ \"$SRC\" != \"main.py\" ] && cp \"$SRC\" main.py\n__ICON_PY__          cat > buildozer.spec \u003c\u003cSPEC_EOF\n          [app]\n          title = $APP_TITLE\n          package.name = $APP_NAME\n          package.domain = $APP_DOMAIN\n          source.dir = .\n          source.include_exts = py,png,jpg,wav,ogg,mp3,json,ttf\n          source.exclude_dirs = .git,.github,bin,.buildozer\n          version = $APP_VERSION\n          requirements = python3==3.10.12,hostpython3==3.10.12,pygame\n          p4a.branch = v2023.09.16\n          android.ndk = 25b\n          orientation = __ORIENT__\n          icon.filename = %(source.dir)s/icon.png\n          fullscreen = 1\n          android.api = 33\n          android.minapi = 21\n          android.archs = arm64-v8a\n          android.accept_sdk_license = True\n          android.debug_artifact = apk\n          [buildozer]\n          log_level = 2\n          warn_on_root = 0\n          SPEC_EOF\n          sed -i 's/^          //' buildozer.spec\n          echo \"----- buildozer.spec -----\"; cat buildozer.spec\n\n      - name: Install Buildozer\n        run: |\n          pip install --upgrade pip\n          pip install --upgrade buildozer \"cython\u003c3\" virtualenv\n\n      - name: Build APK\n        run: buildozer -v android debug\n\n      - name: Signing key (one key for all builds, so updates install over old versions)\n        run: |\n          base64 -d > game.keystore \u003c\u003c'KEYSTORE_EOF'\n          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\n          5UOmK2sCAicQ\n          KEYSTORE_EOF\n\n      - name: Sign and name the APK\n        run: |\n          APK=$(ls -1 bin/*.apk | head -n 1)\n          echo \"Собранный файл: $APK\"\n          APKSIGNER=$(find \"$HOME/.buildozer/android/platform\" -name apksigner -type f | sort | tail -n 1)\n          echo \"apksigner: $APKSIGNER\"\n          if [ -n \"$APKSIGNER\" ]; then\n            \"$APKSIGNER\" sign --ks game.keystore --ks-pass pass:mygames123 --key-pass pass:mygames123 --ks-key-alias mygames --out \"$APK_NAME\" \"$APK\"\n          else\n            cp \"$APK\" \"$APK_NAME\"\n          fi\n          ls -la \"$APK_NAME\"\n\n      - uses: actions/upload-artifact@v4\n        with:\n          name: apk\n          path: ${{ env.APK_NAME }}\n\n      - name: Publish release (APK for the Steam app)\n        uses: softprops/action-gh-release@v2\n        with:\n          tag_name: v${{ github.run_number }}\n          name: ${{ env.APP_TITLE }} (сборка ${{ github.run_number }})\n          files: ${{ env.APK_NAME }}\n"};
+          var ghCb = {}, ghN = 0, pickCb = {}, picked = null;
+          window.onGh = function(id, code, text){ var f = ghCb[id]; delete ghCb[id]; if (f) f(code, text); };
+          window.onPicked = function(id, name, size){ var f = pickCb[id]; delete pickCb[id]; if (f) f(name, size); };
+          function ghToken(){                       // первый токен из настроек (строка «логин=токен» или просто токен)
+            var lines = getToken().split(/\r?\n/);
+            for (var i = 0; i < lines.length; i++) { var ln = lines[i].trim(); if (!ln) continue; var eq = ln.indexOf("="); if (eq > 0 && /^[A-Za-z0-9-]+$/.test(ln.slice(0, eq))) return { login: ln.slice(0, eq), token: ln.slice(eq + 1).trim() }; return { login: "", token: ln }; }
+            return { login: "", token: "" };
+          }
+          function gh(method, path, body, token){
+            return new Promise(function(res){
+              var id = "g" + (++ghN);
+              ghCb[id] = function(code, text){ var j = null; try { j = JSON.parse(text); } catch (e) {} res({ code: code, json: j, text: text }); };
+              Android.gh(id, method, "https://api.github.com" + path, body ? JSON.stringify(body) : "", token);
+            });
+          }
+          function ghPutPicked(path, message, sha, token){
+            return new Promise(function(res){
+              var id = "g" + (++ghN);
+              ghCb[id] = function(code, text){ var j = null; try { j = JSON.parse(text); } catch (e) {} res({ code: code, json: j, text: text }); };
+              Android.ghPutPicked(id, "https://api.github.com" + path, token, message, sha || "");
+            });
+          }
+          function pickGameFile(cb){ if (!NATIVE) { toast("Выбор файла работает только в приложении"); return; } var id = "p" + (++ghN); pickCb[id] = cb; Android.pickFile(id); }
+          function b64utf8(s){ return btoa(unescape(encodeURIComponent(s))); }
+          function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+          var TR = {"а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ё":"e","ж":"zh","з":"z","и":"i","й":"y","к":"k","л":"l","м":"m","н":"n","о":"o","п":"p","р":"r","с":"s","т":"t","у":"u","ф":"f","х":"h","ц":"ts","ч":"ch","ш":"sh","щ":"sch","ъ":"","ы":"y","ь":"","э":"e","ю":"yu","я":"ya"};
+          function slugify(s){ s = String(s).toLowerCase(); var o = ""; for (var i = 0; i < s.length; i++) { var c = s[i]; o += TR.hasOwnProperty(c) ? TR[c] : c; } o = o.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40); if (!/^[a-z]/.test(o)) o = "game-" + o; return o.replace(/-+$/, "") || "game"; }
+          function kindOf(name){ var n = name.toLowerCase(); if (/\.(cpp|cc|cxx)$/.test(n)) return "cpp"; if (/\.py$/.test(n)) return "py"; if (/\.html?$/.test(n)) return "html"; return ""; }
+          var KIND_NAME = { cpp: "C++ и SDL (как симулятор механика)", py: "Python и pygame (как Block Blast)", html: "HTML-игра (как Автосвалка)" };
+          var KIND_TIME = { cpp: "около 10 минут", py: "20-30 минут", html: "3-6 минут" };
+          function niceName(file){ var n = file.replace(/\.[^.]+$/, "").replace(/[-_]+\d+$/, "").replace(/[_-]+/g, " ").trim(); return n ? n.charAt(0).toUpperCase() + n.slice(1) : "Моя игра"; }
+          // значок игры рисуем прямо здесь: цветной квадрат с первой буквой названия
+          function iconB64(name, size){
+            var cv = document.createElement("canvas"); cv.width = cv.height = size; var x = cv.getContext("2d");
+            var h = 0; for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+            var g = x.createLinearGradient(0, 0, size, size); g.addColorStop(0, "hsl(" + h + ",70%,55%)"); g.addColorStop(1, "hsl(" + ((h + 40) % 360) + ",70%,30%)");
+            x.fillStyle = g; var r = size * 0.22; x.beginPath(); x.moveTo(r, 0); x.arcTo(size, 0, size, size, r); x.arcTo(size, size, 0, size, r); x.arcTo(0, size, 0, 0, r); x.arcTo(0, 0, size, 0, r); x.closePath(); x.fill();
+            x.fillStyle = "rgba(255,255,255,0.18)"; x.beginPath(); x.arc(size * 0.3, size * 0.25, size * 0.35, 0, 6.3); x.fill();
+            x.fillStyle = "#fff"; x.font = "bold " + Math.round(size * 0.6) + "px sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+            x.fillText((name.trim().charAt(0) || "?").toUpperCase(), size / 2, size * 0.54);
+            return cv.toDataURL("image/png").split(",")[1];
+          }
+          function heredoc(path, b64){ var out = "          base64 -d > " + path + " <<'ICON_EOF'\n"; for (var i = 0; i < b64.length; i += 76) out += "          " + b64.slice(i, i + 76) + "\n"; return out + "          ICON_EOF\n"; }
+          var DPI = [["mdpi", 48], ["hdpi", 72], ["xhdpi", 96], ["xxhdpi", 144], ["xxxhdpi", 192]];
+          function makeWorkflow(kind, name, appId, pkgName, orient){
+            var t = BUILD_T[kind];
+            if (kind === "cpp") {
+              var st = "      - name: Game icon\n        run: |\n";
+              for (var i = 0; i < DPI.length; i++) st += "          mkdir -p SDL/android-project/app/src/main/res/mipmap-" + DPI[i][0] + "\n" + heredoc("SDL/android-project/app/src/main/res/mipmap-" + DPI[i][0] + "/ic_launcher.png", iconB64(name, DPI[i][1]));
+              t = t.replace("__ICON_STEP__", st + "\n");
+            } else if (kind === "html") {
+              var ic = ""; for (var k = 0; k < DPI.length; k++) ic += heredoc("app/src/main/res/mipmap-" + DPI[k][0] + "/ic_launcher.png", iconB64(name, DPI[k][1]));
+              t = t.replace("__ICONS_HTML__", ic);
+            } else {
+              t = t.replace("__ICON_PY__", heredoc("icon.png", iconB64(name, 192)));
+            }
+            var safe = name.replace(/["\\$`]/g, "");
+            return t.split("__APP_ID__").join(appId).split("__APP_NAME__").join(safe).split("__PKG_NAME__").join(pkgName).split("__ORIENT__").join(orient);
+          }
+          var ng = { file: "", size: 0, kind: "", busy: false, log: [] };
+          function ngLog(s, bad){ ng.log.push((bad ? "✗ " : "✓ ") + s); var el = $("ngLog"); if (el) el.innerHTML = ng.log.map(function(l){ return "<div>" + esc(l) + "</div>"; }).join(""); }
+          function ghErr(r){ var m = r.json && r.json.message ? r.json.message : ("HTTP " + r.code); if (/not accessible|Resource not accessible|403/.test(m) || r.code === 403) m += ". У токена не хватает прав: нужны Administration, Contents и Workflows (Read and write) для всех репозиториев"; if (r.code === 401) m = "Токен не подходит (401). Проверь его в настройках"; return m; }
+          async function createGameFromFile(){
+            if (ng.busy) return;
+            var t = ghToken(); if (!t.token) { toast("Сначала укажи GitHub-токен во вкладке «Лаунчер»"); return; }
+            var name = ($("ngName").value || "").trim() || niceName(ng.file), orient = $("ngOrient").value, kind = ng.kind;
+            ng.busy = true; ng.log = []; render();
+            try {
+              var owner = t.login;
+              var me = await gh("GET", "/user", null, t.token);
+              if (me.code !== 200) throw new Error(ghErr(me));
+              owner = me.json.login; ngLog("Вход в GitHub: " + owner);
+              var base = slugify(name), repo = base;
+              for (var n = 2; n < 20; n++) { var ex = await gh("GET", "/repos/" + owner + "/" + repo, null, t.token); if (ex.code === 404) break; repo = base + "-" + n; }
+              var cr = await gh("POST", "/user/repos", { name: repo, description: name + " (создано в Игротеке)", auto_init: true, "private": false }, t.token);
+              if (cr.code !== 201) throw new Error("не удалось создать репозиторий: " + ghErr(cr));
+              ngLog("Репозиторий создан: " + owner + "/" + repo);
+              await sleep(2500);
+              var ext = (ng.file.match(/\.[A-Za-z0-9]+$/) || [".txt"])[0].toLowerCase();
+              var path = kind === "html" ? "index.html" : slugify(ng.file.replace(/\.[^.]+$/, "")).replace(/-/g, "_") + ext;
+              var up = await ghPutPicked("/repos/" + owner + "/" + repo + "/contents/" + path, "Игра: " + name, "", t.token);
+              if (up.code !== 201 && up.code !== 200) throw new Error("не удалось загрузить файл игры: " + ghErr(up));
+              ngLog("Файл игры загружен: " + path);
+              var pkgName = repo.replace(/[^a-z0-9]/g, ""), appId = "com.kokoko." + pkgName;
+              var wf = makeWorkflow(kind, name, appId, pkgName, orient);
+              var wr = await gh("PUT", "/repos/" + owner + "/" + repo + "/contents/.github/workflows/build-apk.yml", { message: "Сборка APK", content: b64utf8(wf) }, t.token);
+              if (wr.code !== 201 && wr.code !== 200) throw new Error("не удалось добавить файл сборки: " + ghErr(wr));
+              ngLog("Сборка APK запущена (" + KIND_TIME[kind] + ")");
+              var g = makeCustom({ id: "c" + Date.now(), name: name, apk: "https://github.com/" + owner + "/" + repo, pkg: appId, repo: owner + "/" + repo, path: path, kind: kind });
+              GAMES.push(g); saveCustom();
+              ngLog("Игра «" + name + "» добавлена в Библиотеку");
+              ng.done = { repo: owner + "/" + repo, gid: g.id };
+            } catch (e) { ngLog(e.message || String(e), true); }
+            ng.busy = false; render();
+          }
+          async function uploadNewVersion(g){
+            var t = ghToken(); if (!t.token) { toast("Сначала укажи GitHub-токен во вкладке «Лаунчер»"); return; }
+            pickGameFile(async function(name, size){
+              if (!name || size < 0) return;
+              if (kindOf(name) !== g.kind) { toast("Нужен файл того же типа (" + KIND_NAME[g.kind] + ")"); return; }
+              toast("Загружаю новую версию…");
+              var p = "/repos/" + g.repo + "/contents/" + g.path, cur = await gh("GET", p, null, t.token);
+              var r = await ghPutPicked(p, "Новая версия игры", cur.code === 200 && cur.json ? cur.json.sha : "", t.token);
+              if (r.code === 200 || r.code === 201) toast("Загружено! Сборка запустилась (" + KIND_TIME[g.kind] + "), потом жми «Обновить»");
+              else toast("Ошибка: " + ghErr(r));
+            });
+          }
+          async function buildStatus(g){
+            var t = ghToken(), r = await gh("GET", "/repos/" + g.repo + "/actions/runs?per_page=1", null, t.token);
+            if (r.code !== 200 || !r.json || !r.json.workflow_runs || !r.json.workflow_runs.length) { toast("Сборок пока нет"); return; }
+            var w = r.json.workflow_runs[0], s = w.status === "completed" ? (w.conclusion === "success" ? "готово ✓, можно скачивать" : "ошибка ✗ (" + w.conclusion + ")") : (w.status === "queued" ? "в очереди" : "идёт сборка…");
+            toast("Сборка #" + w.run_number + ": " + s);
+          }
+          function newGameBox(){
+            var h = '<div class="box"><h4>Новая игра из файла</h4><p style="margin:0 0 8px;font-size:14px">Выбери файл игры (.cpp, .py или .html): приложение само создаст репозиторий на GitHub, загрузит файл, запустит сборку APK и добавит игру в Библиотеку.</p>';
+            h += '<button class="btn" data-ng="pick"' + (ng.busy ? " disabled" : "") + '>' + (ng.file ? "Выбрать другой файл" : "Выбрать файл игры") + '</button>';
+            if (ng.file) {
+              h += '<p style="margin:8px 0 4px;font-size:14px">Файл: <b>' + esc(ng.file) + '</b> (' + (ng.size / 1024 / 1024).toFixed(2) + ' МБ)<br>Тип: ' + (ng.kind ? KIND_NAME[ng.kind] : '<span style="color:#e57373">не подходит, нужен .cpp, .py или .html</span>') + '</p>';
+              if (ng.kind) {
+                h += '<div class="linkrow"><label>Название</label><input type="text" id="ngName" value="' + esc(ng.name || niceName(ng.file)) + '"></div>';
+                h += '<div class="linkrow"><label>Экран</label><select id="ngOrient"><option value="landscape"' + (ng.kind === "cpp" ? " selected" : "") + '>Горизонтально</option><option value="portrait"' + (ng.kind !== "cpp" ? " selected" : "") + '>Вертикально</option></select></div>';
+                h += '<button class="btn" data-ng="create"' + (ng.busy ? " disabled" : "") + '>' + (ng.busy ? "Создаю…" : "Создать игру и собрать APK") + '</button>';
+              }
+            }
+            h += '<div id="ngLog" style="margin-top:8px;font-size:13px;line-height:1.5">' + ng.log.map(function(l){ return "<div>" + esc(l) + "</div>"; }).join("") + '</div>';
+            if (ng.done) h += '<div style="margin-top:6px"><button class="btn" data-ng="actions">Открыть сборку на GitHub</button> <button class="btn" data-ng="lib">В Библиотеку</button></div>';
+            return h + '</div>';
+          }
+          document.addEventListener("click", function(e){
+            var b = e.target.closest ? e.target.closest("[data-ng]") : null; if (!b) return;
+            var a = b.getAttribute("data-ng");
+            if (a === "pick") pickGameFile(function(name, size){ if (!name || size < 0) return; ng.file = name; ng.size = size; ng.kind = kindOf(name); ng.name = niceName(name); ng.log = []; ng.done = null; render(); });
+            else if (a === "create") { ng.name = $("ngName").value; createGameFromFile(); }
+            else if (a === "actions" && ng.done) Android.openUrl("https://github.com/" + ng.done.repo + "/actions");
+            else if (a === "lib" && ng.done) go("lib", ng.done.gid);
+            else if (a === "newver") { var g = gameById(b.getAttribute("data-gid")); if (g && g.repo) uploadNewVersion(g); }
+            else if (a === "status") { var g2 = gameById(b.getAttribute("data-gid")); if (g2 && g2.repo) buildStatus(g2); }
+            else if (a === "build") { var g3 = gameById(b.getAttribute("data-gid")); if (g3 && g3.repo) Android.openUrl("https://github.com/" + g3.repo + "/actions"); }
+          });
+
 
           /* ====================== ХУДОЖЕСТВО ====================== */
           function artSVG(kind, w, h){
@@ -1477,11 +1620,13 @@ jobs:
           }
           function viewLinks(){
             var h = '<h2>Все ссылки</h2><p class="hint" style="margin:0 0 10px">Впиши ссылку, и кнопки на странице игры появятся сами. Данные хранятся в этом браузере. Зелёная точка - ссылка выглядит правильно, красная - не похоже на ссылку.</p>';
+            h += newGameBox();
             h += '<div class="box"><h4>Добавить свою игру</h4><div class="linkrow"><label>Название</label><input type="text" id="cgName" placeholder="Моя новая игра"><span></span></div><div class="linkrow"><label>APK или GitHub</label><input type="url" id="cgApk" placeholder="https://github.com/логин/репозиторий" inputmode="url"><span></span></div><div class="row"><button class="btn play" id="cgAdd">+ Добавить в библиотеку</button></div><p class="hint">В поле APK можно вставить ссылку на сам файл .apk или ссылку на GitHub-репозиторий: тогда приложение само возьмёт APK из последнего релиза.</p></div>';
             h += '<div class="row"><button class="btn" id="copyAll">Скопировать все ссылки</button><button class="btn off" id="resetAll">Сбросить мои изменения</button></div>';
             for (var i = 0; i < GAMES.length; i++) {
               var g = GAMES[i];
               h += '<div class="box" id="box-'+g.id+'"><h4>'+esc(g.name)+(g.custom?' <button class="btn off" style="padding:3px 8px;font-size:12px" data-del="'+g.id+'">убрать</button>':"")+'</h4>';
+              if (g.custom && g.repo) h += '<div class="row"><button class="btn" data-ng="newver" data-gid="'+g.id+'">Загрузить новую версию файла</button><button class="btn" data-ng="status" data-gid="'+g.id+'">Состояние сборки</button><button class="btn off" data-ng="build" data-gid="'+g.id+'">Открыть сборку</button></div>';
               for (var t = 0; t < LINK_TYPES.length; t++) {
                 var key = LINK_TYPES[t][0], v = getLink(g, key), ok = isUrl(v);
                 h += '<div class="linkrow"><label>'+esc(LINK_TYPES[t][1])+'</label><input type="url" inputmode="url" placeholder="https://..." value="'+esc(v)+'" data-g="'+g.id+'" data-t="'+key+'"><span class="st '+(v?(ok?"ok":"bad"):"")+'"></span></div>';
@@ -1645,6 +1790,70 @@ jobs:
 
               private void js(final String code) {
                   runOnUiThread(() -> web.evaluateJavascript(code, null));
+              }
+
+              // ---------- выбор файла и запросы к GitHub (для «Новая игра из файла») ----------
+              private static final int PICK_REQ = 4242;
+              private String pickId = null, pickedName = "";
+              private byte[] pickedBytes = null;
+
+              @Override
+              protected void onActivityResult(int req, int res, Intent data) {
+                  super.onActivityResult(req, res, data);
+                  if (req != PICK_REQ || pickId == null) return;
+                  final String id = JSONObject.quote(pickId);
+                  pickId = null;
+                  if (res != RESULT_OK || data == null || data.getData() == null) { js("window.onPicked(" + id + ",\"\",-1)"); return; }
+                  final Uri uri = data.getData();
+                  new Thread(() -> {
+                      try {
+                          String name = "game";
+                          android.database.Cursor cur = getContentResolver().query(uri, null, null, null, null);
+                          if (cur != null) { int ni = cur.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME); if (cur.moveToFirst() && ni >= 0) name = cur.getString(ni); cur.close(); }
+                          InputStream in = getContentResolver().openInputStream(uri);
+                          ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                          byte[] buf = new byte[65536]; int n; long total = 0;
+                          while ((n = in.read(buf)) > 0) { bo.write(buf, 0, n); total += n; if (total > 60_000_000) throw new Exception("файл больше 60 МБ"); }
+                          in.close();
+                          pickedBytes = bo.toByteArray(); pickedName = name;
+                          js("window.onPicked(" + id + "," + JSONObject.quote(name) + "," + pickedBytes.length + ")");
+                      } catch (Exception e) {
+                          js("window.onPicked(" + id + ",\"\",-1)");
+                          runOnUiThread(() -> Toast.makeText(this, "Не удалось прочитать файл: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                      }
+                  }).start();
+              }
+
+              private void ghCall(String id, String method, String url, String body, String token) {
+                  final String jid = JSONObject.quote(id);
+                  try {
+                      HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+                      c.setRequestMethod(method);
+                      c.setConnectTimeout(20000);
+                      c.setReadTimeout(120000);
+                      c.setRequestProperty("User-Agent", "MyGamesLauncher");
+                      c.setRequestProperty("Accept", "application/vnd.github+json");
+                      c.setRequestProperty("X-GitHub-Api-Version", "2022-11-28");
+                      if (token != null && !token.isEmpty()) c.setRequestProperty("Authorization", "Bearer " + token);
+                      if (body != null && !body.isEmpty()) {
+                          byte[] b = body.getBytes("UTF-8");
+                          c.setDoOutput(true);
+                          c.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                          c.setFixedLengthStreamingMode(b.length);
+                          java.io.OutputStream os = c.getOutputStream(); os.write(b); os.close();
+                      }
+                      int code = c.getResponseCode();
+                      InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
+                      String text = "";
+                      if (in != null) {
+                          ByteArrayOutputStream bo = new ByteArrayOutputStream(); byte[] buf = new byte[8192]; int n; long total = 0;
+                          while ((n = in.read(buf)) > 0) { bo.write(buf, 0, n); total += n; if (total > 4_000_000) break; }
+                          in.close(); text = bo.toString("UTF-8");
+                      }
+                      js("window.onGh(" + jid + "," + code + "," + JSONObject.quote(text) + ")");
+                  } catch (Exception e) {
+                      js("window.onGh(" + jid + ",0," + JSONObject.quote("{\"message\":" + JSONObject.quote("нет связи: " + e.getMessage()) + "}") + ")");
+                  }
               }
 
               private boolean canInstall() {
@@ -1850,6 +2059,39 @@ jobs:
                           ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                           cm.setPrimaryClip(ClipData.newPlainText("text", text));
                       });
+                  }
+
+                  @JavascriptInterface
+                  public void pickFile(final String id) {
+                      runOnUiThread(() -> {
+                          pickId = id;
+                          Intent it = new Intent(Intent.ACTION_GET_CONTENT);
+                          it.setType("*/*");
+                          it.addCategory(Intent.CATEGORY_OPENABLE);
+                          try { startActivityForResult(Intent.createChooser(it, "Файл игры"), PICK_REQ); }
+                          catch (Exception e) { pickId = null; js("window.onPicked(" + JSONObject.quote(id) + ",\"\",-1)"); }
+                      });
+                  }
+
+                  @JavascriptInterface
+                  public void gh(final String id, final String method, final String url, final String body, final String token) {
+                      new Thread(() -> ghCall(id, method, url, body, token)).start();
+                  }
+
+                  @JavascriptInterface
+                  public void ghPutPicked(final String id, final String url, final String token, final String message, final String sha) {
+                      new Thread(() -> {
+                          try {
+                              if (pickedBytes == null) throw new Exception("файл не выбран");
+                              JSONObject o = new JSONObject();
+                              o.put("message", message);
+                              o.put("content", android.util.Base64.encodeToString(pickedBytes, android.util.Base64.NO_WRAP));
+                              if (sha != null && !sha.isEmpty()) o.put("sha", sha);
+                              ghCall(id, "PUT", url, o.toString(), token);
+                          } catch (Exception e) {
+                              js("window.onGh(" + JSONObject.quote(id) + ",0," + JSONObject.quote("{\"message\":" + JSONObject.quote(e.getMessage()) + "}") + ")");
+                          }
+                      }).start();
                   }
 
                   @JavascriptInterface
