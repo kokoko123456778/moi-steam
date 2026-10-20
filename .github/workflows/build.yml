@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 7
-                  versionName '2.5'
+                  versionCode 8
+                  versionName '2.6'
               }
               signingConfigs {
                   mygames {
@@ -1724,7 +1724,7 @@ jobs:
             var h = '<h2>Новое и популярное</h2><div class="grid">';
             for (var i = 0; i < GAMES.length; i++) {
               var g = GAMES[i];
-              h += '<div class="card" data-g="'+g.id+'"><div class="art">'+artSVG(g.art)+'</div><div class="body"><h3>'+esc(g.name)+'</h3><p>'+esc(g.short)+'</p>'
+              h += '<div class="card" data-g="'+g.id+'"><div class="art">'+artSVG(g.art)+'</div><div class="body"><h3>'+esc(g.name)+(upd[g.id] ? ' <span class="tag" style="background:#5ba32b;color:#fff">обновление</span>' : '')+'</h3><p>'+esc(g.short)+'</p>'
                 + '<div class="tags">'+g.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</div>'
                 + '<div class="plat">'+g.platforms.map(function(p){return '<i>'+esc(p)+'</i>';}).join("")+'</div><div class="price">'+esc(g.price)+'</div></div></div>';
             }
@@ -1744,11 +1744,12 @@ jobs:
             }
             if (inf.installed) {
               h += '<button class="btn play" data-act="launch">▶ Играть</button>';
-              if (apk) h += '<button class="btn" data-act="update">⟳ Обновить</button>';
+              if (apk) h += upd[g.id] ? '<button class="btn play" data-act="update">⟳ Обновить: ' + esc(upd[g.id].name || "новая версия") + '</button>' : '<button class="btn" data-act="update">⟳ Переустановить</button>';
               h += '<button class="btn off" data-act="remove">Удалить</button>';
             } else if (apk) h += '<button class="btn play" data-act="install">⬇ Скачать и установить</button>';
             else h += '<button class="btn off" data-need="apk">Нет ссылки на APK</button>';
-            if (inf.installed && inf.version) h += '<div class="hint" style="width:100%">Установлена версия: ' + esc(inf.version) + '</div>';
+            if (inf.installed && upd[g.id]) h += '<div class="hint" style="width:100%;color:#8fd14f">Есть новая версия' + (autoUpdOn() ? ': Игротека скачивает её сама, останется подтвердить установку' : '') + '</div>';
+            else if (inf.installed) h += '<div class="hint" style="width:100%">Установлена последняя версия</div>';
             return h;
           }
           function otherLinks(g){
@@ -1772,7 +1773,33 @@ jobs:
             toast(msg || (ok ? "Готово" : "Ошибка"));
             render();
           };
-          window.onResumeApp = function(){ if (view === "lib" || view === "launcher") render(); };
+          /* ---------- автообновление: сравниваем дату последнего релиза с датой установки игры ---------- */
+          var upd = {}, autoAsked = {}, lastUpdCheck = 0;
+          function autoUpdOn(){ try { return localStorage.getItem("autoUpd") !== "0"; } catch (e) { return true; } }
+          function ghRepoOf(url){ var m = /github\.com\/([^\/\s]+)\/([^\/?#\s]+)/i.exec(url || ""); return m ? m[1] + "/" + m[2].replace(/\.git$/, "") : ""; }
+          function waitDl(id){ return new Promise(function(res){ (function t(){ if (dl[id] && dl[id].busy) setTimeout(t, 1000); else res(); })(); }); }
+          function checkUpdates(){
+            if (!NATIVE) return; lastUpdCheck = Date.now();
+            var list = GAMES.slice(), queue = [];
+            function next(i){
+              if (i >= list.length) { render(); return autoInstall(queue, 0); }
+              var g = list[i], inf = gameInfo(g), url = getLink(g, "apk"), rp = ghRepoOf(url);
+              if (!inf.installed || !rp) return next(i + 1);
+              return gh("GET", "/repos/" + rp + "/releases/latest", null, getTokenFor(url)).then(function(r){
+                var at = r && r.code === 200 && r.json ? Date.parse(r.json.published_at || "") : 0;
+                if (at && inf.updated && at > inf.updated + 60000) { upd[g.id] = { name: r.json.name || r.json.tag_name || "", at: at }; queue.push(g); } else if (at) delete upd[g.id];
+                return next(i + 1);
+              }, function(){ return next(i + 1); });
+            }
+            return next(0);
+          }
+          function autoInstall(q, i){
+            if (!autoUpdOn() || i >= q.length) return;
+            var g = q[i]; if (autoAsked[g.id] || (dl[g.id] && dl[g.id].busy)) return autoInstall(q, i + 1);
+            autoAsked[g.id] = true; toast("Новая версия: " + g.name + ". Скачиваю…"); doAct(g, "update");
+            return waitDl(g.id).then(function(){ return autoInstall(q, i + 1); });
+          }
+          window.onResumeApp = function(){ if (view === "lib" || view === "launcher" || view === "store") render(); if (Date.now() - lastUpdCheck > 10 * 60000) checkUpdates(); };
           window.handleBack = function(){ if (view !== "store") { go("store"); return true; } return false; };
           if (NATIVE) document.addEventListener("click", function(e){
             var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
@@ -1879,6 +1906,7 @@ jobs:
           }
           function viewLauncher(){
             var h = '<h2>Настройки и лаунчер</h2>';
+            h += '<div class="box"><h4>Обновления игр</h4><label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="autoupd"' + (autoUpdOn() ? ' checked' : '') + '> Сразу скачивать новые версии игр</label><p class="hint">При запуске Игротека проверяет репозитории игр. Если там новая сборка, она скачивается сама; Android только попросит нажать «Установить».</p><div class="row"><button class="btn" id="chkupd">Проверить обновления сейчас</button></div></div>';
             h += '<div class="box"><h4>Приложение</h4><p style="margin:0 0 6px;font-size:14px">'+(NATIVE?'Скачивание и установка игр работают прямо в этом приложении.':'Эта страница открыта в браузере: скачивание и установка работают только в приложении (APK).')+'</p><div class="linkrow"><label>GitHub-токены</label><textarea id="tok" rows="3" style="width:100%;background:#0d131c;border:1px solid var(--line);border-radius:6px;color:#fff;padding:9px 10px;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace" placeholder="kokoko123456778=github_pat_...&#10;vladionin63-tech=github_pat_...">'+esc(getToken())+'</textarea><span class="st '+(getToken()?"ok":"")+'"></span></div><p class="hint">Токен нужен, чтобы приложение могло взять APK прямо из последней сборки GitHub (Actions), даже если релизов нет, и чтобы открывать приватные репозитории. Пиши по строке на аккаунт: логин=токен (для каждого аккаунта GitHub свой токен). Права токена: Actions: Read-only и Contents: Read-only. Создать: https://github.com/settings/personal-access-tokens/new . Токены хранятся только на этом телефоне.</p></div>';
             h += '<div class="box"><h4>1. Для APK-лаунчера (Android)</h4><p style="margin:0 0 6px;font-size:14px">В приложении «Мои игры» нажми «Список» и вставь ссылку на файл games.json. Package name каждой игры - это applicationId из сборки (после первой сборки APK узнаешь).</p>';
             for (var i = 0; i < GAMES.length; i++) {
@@ -1898,6 +1926,8 @@ jobs:
             var pk = $("main").querySelectorAll("[data-pk]");
             for (var a = 0; a < pk.length; a++) pk[a].oninput = function(){ setPkg(gameById(this.getAttribute("data-pk")), this.value); $("gj").textContent = gamesJson(); this.parentNode.getElementsByClassName("st")[0].className = "st " + (this.value.trim() ? "ok" : ""); };
             $("cpj").onclick = function(){ copyText(gamesJson(), "games.json скопирован"); };
+            if ($("autoupd")) $("autoupd").onchange = function(){ try { localStorage.setItem("autoUpd", this.checked ? "1" : "0"); } catch (e) {} };
+            if ($("chkupd")) $("chkupd").onclick = function(){ autoAsked = {}; toast("Проверяю обновления…"); checkUpdates(); };
             var gjs = $("main").querySelectorAll("[data-gj]");
             for (var b = 0; b < gjs.length; b++) gjs[b].onclick = function(){ copyText(gameJsonFor(gameById(this.getAttribute("data-gj"))), "game.json скопирован"); };
           }
@@ -1922,6 +1952,7 @@ jobs:
             if (view === "store") viewStore(); else if (view === "lib") viewLib(); else if (view === "links") viewLinks(); else if (view === "launcher") viewLauncher(); else viewHelp();
           }
           render();
+          setTimeout(checkUpdates, 1500);
           </script>
           </body>
           </html>
@@ -2231,6 +2262,7 @@ jobs:
                           JSONObject o = new JSONObject();
                           o.put("installed", true);
                           o.put("version", p.versionName == null ? "" : p.versionName);
+                          o.put("updated", p.lastUpdateTime);
                           return o.toString();
                       } catch (Exception e) {
                           return "{\"installed\":false}";
