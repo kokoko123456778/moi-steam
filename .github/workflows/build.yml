@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 9
-                  versionName '2.7'
+                  versionCode 10
+                  versionName '2.8'
               }
               signingConfigs {
                   mygames {
@@ -1464,6 +1464,8 @@ jobs:
               short:"Симулятор ларька с шаурмой в 3D.", tags:["Симулятор","Бизнес","C++ / SDL"], desc:"Шаурмичная: свой ларёк с шаурмой в 3D - готовь заказы, обслуживай покупателей и развивай точку. Игра на C++ и SDL одним файлом." },
             { id:"p_sborka", name:"Сборка ПК", repo:"kokoko123456778/sborka-pk-2", path:"sborka_pk.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.sborkapk2", art:"generic", color:"#2c7ab0",
               short:"Симулятор мастерской по сборке компьютеров в 3D.", tags:["Симулятор","Компьютеры","C++ / SDL"], desc:"Сборка ПК: мастерская по сборке компьютеров в 3D - подбирай детали, собирай и отдавай заказы. Игра на C++ и SDL одним файлом." },
+            { id:"p_shahmaty", name:"Шахматы", repo:"kokoko123456778/shahmaty", path:"shahmaty.cpp", kind:"cpp", orient:"portrait", pkg:"com.kokoko.shahmaty", art:"chess", color:"#4f7a36",
+              short:"Шахматы против бота (5 уровней) или вдвоём на одном телефоне.", tags:["Настольная","Логика","C++ / SDL"], desc:"Шахматы: полные правила - рокировка, взятие на проходе, превращение пешки, мат, пат и ничьи. Играй против бота с 5 уровнями сложности или вдвоём на одном телефоне, с подсказкой ходов, отменой хода, часами и записью партии. Игра на C++ и SDL одним файлом." },
             { id:"p_dalnoboy", name:"Дальнобойщик", repo:"kokoko123456778/dalnoboy", path:"dalnoboy.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.dalnoboy", art:"race", color:"#b8862b",
               short:"Фуры, заказы, весы и ДПС: от Краснодара до Салехарда.", tags:["Симулятор","Грузовики","Открытый мир","C++ / SDL"],
               desc:"Дальнобойщик: начинаешь на старой фуре в Екатеринбурге, берёшь заказы на бирже, сцепляешь прицеп задним ходом и везёшь груз между 43 городами - от Москвы и Краснодара до Югры и Ямала. Заправки, весовой контроль, посты ДПС и камеры, усталость и сон, ремонт и тюнинг, покупка новых тягачей. На севере снег и зимники со ледовой переправой. Мосты через реки, развязки, ж/д переезды с поездами, дорожные работы с реверсом, сёла со светофорами и пешеходами, съезды в деревни с дешёвой заправкой и ночлегом. Навигатор с выбором маршрута. Города можно проехать насквозь или по объездной: улицы с достопримечательностями, машинами, автобусами, трамваями и пешеходами, порт в Новороссийске. Четырёхполосные трассы, объездные вокруг посёлков, времена года, туман, гололёд, метели с перекрытием дороги, платные участки." }
@@ -1698,6 +1700,12 @@ jobs:
               s += '<g fill="#b4afa5"><rect x="60" y="80" width="60" height="70"/><rect x="280" y="80" width="60" height="70"/><rect x="160" y="60" width="80" height="90"/></g><g fill="#8c877f"><rect x="54" y="72" width="72" height="12"/><rect x="274" y="72" width="72" height="12"/><rect x="152" y="52" width="96" height="12"/></g>';
               s += '<g fill="#b4afa5"><rect x="56" y="60" width="12" height="14"/><rect x="84" y="60" width="12" height="14"/><rect x="112" y="60" width="12" height="14"/><rect x="276" y="60" width="12" height="14"/><rect x="304" y="60" width="12" height="14"/><rect x="332" y="60" width="12" height="14"/><rect x="154" y="38" width="14" height="16"/><rect x="193" y="38" width="14" height="16"/><rect x="232" y="38" width="14" height="16"/></g>';
               s += '<rect x="186" y="110" width="28" height="40" fill="#4a3428"/><rect x="72" y="100" width="36" height="22" fill="#3c78e0"/><rect x="292" y="100" width="36" height="22" fill="#e04a3c"/><polygon points="176,30 186,14 196,26 200,10 204,26 214,14 224,30" fill="#f5cd3c"/>';
+            } else if (kind === "chess") {
+              s += '<defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d4a24"/><stop offset="1" stop-color="#1b2d16"/></linearGradient></defs><rect width="400" height="200" fill="url(#gc)"/>';
+              for (var r = 0; r < 4; r++) for (var c = 0; c < 16; c++) s += '<rect x="' + (c * 25) + '" y="' + (100 + r * 25) + '" width="25" height="25" fill="' + ((r + c) % 2 ? '#769656' : '#eeeed2') + '"/>';
+              s += '<g fill="#f5c846" stroke="#3c280a" stroke-width="3"><rect x="160" y="160" width="80" height="16" rx="5"/><polygon points="170,160 230,160 216,104 184,104"/><rect x="172" y="98" width="56" height="12" rx="4"/><ellipse cx="200" cy="82" rx="26" ry="20"/><rect x="195" y="40" width="10" height="34"/><rect x="186" y="50" width="28" height="9"/></g>';
+              s += '<g fill="#2a2a2a" stroke="#eeeed2" stroke-width="2"><rect x="70" y="164" width="52" height="12" rx="4"/><polygon points="78,164 114,164 108,122 84,122"/><circle cx="96" cy="112" r="14"/></g>';
+              s += '<g fill="#2a2a2a" stroke="#eeeed2" stroke-width="2"><rect x="278" y="164" width="56" height="12" rx="4"/><path d="M286 164 L326 164 L322 120 Q318 92 296 92 L282 104 L290 110 L300 106 L292 132 Z"/></g>';
             } else if (kind === "generic") {
               s += '<defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a2a7a"/><stop offset="1" stop-color="#142a52"/></linearGradient></defs><rect width="400" height="200" fill="url(#gg)"/><g fill="#c7d5e0" opacity=".85"><rect x="150" y="80" width="100" height="50" rx="22"/></g><g fill="#2a1f55"><rect x="172" y="98" width="26" height="6"/><rect x="182" y="88" width="6" height="26"/><circle cx="222" cy="96" r="5"/><circle cx="234" cy="108" r="5"/></g>';
             } else {
