@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 10
-                  versionName '2.8'
+                  versionCode 11
+                  versionName '2.9'
               }
               signingConfigs {
                   mygames {
@@ -1519,6 +1519,24 @@ jobs:
           function kindOf(name){ var n = name.toLowerCase(); if (/\.(cpp|cc|cxx)$/.test(n)) return "cpp"; if (/\.py$/.test(n)) return "py"; if (/\.html?$/.test(n)) return "html"; return ""; }
           var KIND_NAME = { cpp: "C++ и SDL (как симулятор механика)", py: "Python и pygame (как Block Blast)", html: "HTML-игра (как Автосвалка)" };
           var KIND_TIME = { cpp: "около 10 минут", py: "20-30 минут", html: "3-6 минут" };
+          /* ---------- копии игр: «bitva-bashen-5» - это копия «bitva-bashen» ---------- */
+          function repoOfGame(g){ var r = normRepo(g.repo || "") || normRepo(getLink(g, "apk")); return r.indexOf("/") > 0 ? r : ""; }
+          function baseName(r){ var n = (r.split("/")[1] || r).toLowerCase(); return n.replace(/-\d+$/, ""); }
+          function isMainGame(g){ return !g.custom || !!presetFor(g); }
+          function mainOf(base, except){ for (var i = 0; i < GAMES.length; i++) { var g = GAMES[i]; if (g === except || !isMainGame(g)) continue; var r = repoOfGame(g); if (r && baseName(r) === base) return g; } return null; }
+          function copyOf(g){ if (isMainGame(g)) return null; var r = repoOfGame(g); return r ? mainOf(baseName(r), g) : null; }
+          function allCopies(){ var a = []; for (var i = 0; i < GAMES.length; i++) if (copyOf(GAMES[i])) a.push(GAMES[i]); return a; }
+          function removeCopies(list){
+            var n = 0;
+            for (var i = 0; i < list.length; i++) { var g = list[i], pk = getPkg(g), inf = gameInfo(g); if (NATIVE && pk && inf.installed) { try { Android.uninstall(pk); } catch (e) {} } removeCustomGame(g.id); n++; }
+            toast(n ? "Убрано копий: " + n + ". Если Android спросит - подтверди удаление" : "Копий нет"); curGame = GAMES[0].id; render();
+          }
+          function existingFor(file, name){            // есть ли уже такая игра (для «Новая игра из файла»)
+            var bases = [slugify(name || ""), slugify(String(file || "").replace(/\.[^.]+$/, "").replace(/[_-]+\d+$/, ""))];
+            for (var k = 0; k < bases.length; k++) { var b = bases[k].replace(/-\d+$/, ""); var m = mainOf(b, null); if (m) return m;
+              for (var i = 0; i < GAMES.length; i++) { var r = repoOfGame(GAMES[i]); if (r && baseName(r) === b && GAMES[i].custom) return GAMES[i]; } }
+            return null;
+          }
           function niceName(file){ var n = file.replace(/\.[^.]+$/, "").replace(/[-_]+\d+$/, "").replace(/[_-]+/g, " ").trim(); return n ? n.charAt(0).toUpperCase() + n.slice(1) : "Моя игра"; }
           // значок игры рисуем прямо здесь: цветной квадрат с первой буквой названия
           function iconB64(name, size){
@@ -1587,6 +1605,29 @@ jobs:
             } catch (e) { ngLog(e.message || String(e), true); }
             ng.busy = false; render();
           }
+          async function uploadToExisting(g){           // загрузить выбранный файл как новую версию уже существующей игры
+            var t = ghToken(); if (!t.token) { toast("Сначала укажи GitHub-токен во вкладке «Лаунчер»"); return; }
+            var repo = repoOfGame(g); if (!repo) { toast("У игры нет репозитория"); return; }
+            ng.busy = true; ng.log = []; render();
+            try {
+              var ls = await gh("GET", "/repos/" + repo + "/contents/", null, t.token);
+              if (ls.code !== 200 || !ls.json) throw new Error("не открыть репозиторий " + repo + ": " + ghErr(ls));
+              var same = [], want = slugify(ng.file.replace(/\.[^.]+$/, "")).replace(/-/g, "_");
+              for (var i = 0; i < ls.json.length; i++) if (ls.json[i].type === "file" && kindOf(ls.json[i].name) === ng.kind) same.push(ls.json[i]);
+              var f = null; for (var j = 0; j < same.length; j++) if (same[j].name.replace(/\.[^.]+$/, "") === want) f = same[j];
+              if (!f && same.length) f = same[0];
+              var ext = (ng.file.match(/\.[A-Za-z0-9]+$/) || [".txt"])[0].toLowerCase();
+              var path = f ? f.path : (ng.kind === "html" ? "index.html" : want + ext);
+              var up = await ghPutPicked("/repos/" + repo + "/contents/" + path, "Новая версия: " + g.name, f ? f.sha : "", t.token);
+              if (up.code !== 200 && up.code !== 201) throw new Error("не удалось загрузить: " + ghErr(up));
+              ngLog("Загружено в «" + g.name + "» (" + repo + "/" + path + ")");
+              ngLog("Сборка запущена (" + KIND_TIME[ng.kind] + "). Когда соберётся, Игротека сама предложит обновить игру - новой копии не будет.");
+              autoAsked = {}; delete upd[g.id];
+              ng.done = { repo: repo, gid: g.id };
+              setTimeout(function(){ autoAsked = {}; checkUpdates(); }, 8 * 60000);
+            } catch (e) { ngLog(e.message || String(e), true); }
+            ng.busy = false; render();
+          }
           async function uploadNewVersion(g){
             var t = ghToken(); if (!t.token) { toast("Сначала укажи GitHub-токен во вкладке «Лаунчер»"); return; }
             pickGameFile(async function(name, size){
@@ -1637,6 +1678,12 @@ jobs:
               if (ng.kind) {
                 h += '<div class="linkrow"><label>Название</label><input type="text" id="ngName" value="' + esc(ng.name || niceName(ng.file)) + '"></div>';
                 h += '<div class="linkrow"><label>Экран</label><select id="ngOrient"><option value="landscape"' + (ng.kind === "cpp" ? " selected" : "") + '>Горизонтально</option><option value="portrait"' + (ng.kind !== "cpp" ? " selected" : "") + '>Вертикально</option></select></div>';
+                var ex = existingFor(ng.file, ng.name);
+                if (ex) {
+                  h += '<p style="margin:8px 0 6px;font-size:14px;color:#ffd54f">Такая игра уже есть: <b>' + esc(ex.name) + '</b>. Лучше загрузить файл как её новую версию - тогда обновится та же игра, с той же иконкой и сохранениями.</p>';
+                  h += '<button class="btn play" data-ng="toexist" data-gid="' + ex.id + '"' + (ng.busy ? " disabled" : "") + '>' + (ng.busy ? "Загружаю…" : "Обновить «" + esc(ex.name) + "»") + '</button> ';
+                  h += '<button class="btn off" data-ng="create"' + (ng.busy ? " disabled" : "") + '>Всё равно создать отдельную копию</button>';
+                } else
                 h += '<button class="btn" data-ng="create"' + (ng.busy ? " disabled" : "") + '>' + (ng.busy ? "Создаю…" : "Создать игру и собрать APK") + '</button>';
               }
             }
@@ -1649,6 +1696,10 @@ jobs:
             var a = b.getAttribute("data-ng");
             if (a === "pick") pickGameFile(function(name, size){ if (!name || size < 0) return; ng.file = name; ng.size = size; ng.kind = kindOf(name); ng.name = niceName(name); ng.log = []; ng.done = null; render(); });
             else if (a === "create") { ng.name = $("ngName").value; createGameFromFile(); }
+            else if (a === "toexist") { var gx = gameById(b.getAttribute("data-gid")); if (gx) uploadToExisting(gx); }
+            else if (a === "dedupe") removeCopies(allCopies());
+            else if (a === "decopy") { var gc = gameById(b.getAttribute("data-gid")); if (gc && copyOf(gc)) removeCopies([gc]); }
+            else if (a === "tomain") { var gm = copyOf(gameById(b.getAttribute("data-gid"))); if (gm) go("lib", gm.id); }
             else if (a === "actions" && ng.done) Android.openUrl("https://github.com/" + ng.done.repo + "/actions");
             else if (a === "lib" && ng.done) go("lib", ng.done.gid);
             else if (a === "newver") { var g = gameById(b.getAttribute("data-gid")); if (g && g.repo) uploadNewVersion(g); }
@@ -1841,7 +1892,11 @@ jobs:
             var g = gameById(curGame);
             var h = '<div class="lib"><div class="libside">';
             for (var i = 0; i < GAMES.length; i++) h += '<div class="item'+(GAMES[i].id===g.id?" on":"")+'" data-g="'+GAMES[i].id+'"><div class="dot" style="background:'+GAMES[i].color+'"></div>'+esc(GAMES[i].name)+'</div>';
-            h += '</div><div><div class="hero"><div class="art">'+artSVG(g.art)+'<div class="ttl">'+esc(g.name)+'</div></div><div class="info">';
+            h += '</div><div>';
+            var cps = allCopies(), mg = copyOf(g);
+            if (mg) h += '<div class="box" style="border-color:#ffb300"><h4>Это копия игры «'+esc(mg.name)+'»</h4><p style="margin:0 0 8px;font-size:14px">Её создала кнопка «Новая игра из файла». В копии старая версия и обычная иконка. Новые версии приходят в «'+esc(mg.name)+'».</p><div class="row"><button class="btn play" data-ng="tomain" data-gid="'+g.id+'">Открыть «'+esc(mg.name)+'»</button><button class="btn" data-ng="decopy" data-gid="'+g.id+'">Удалить эту копию</button></div></div>';
+            else if (cps.length) h += '<div class="box" style="border-color:#ffb300"><h4>Найдены копии игр: '+cps.length+'</h4><p style="margin:0 0 8px;font-size:14px">'+esc(cps.map(function(c){ return c.name; }).join(", "))+'. В них старые версии. Удалить их из Библиотеки и с телефона?</p><div class="row"><button class="btn play" data-ng="dedupe">Удалить все копии</button></div></div>';
+            h += '<div class="hero"><div class="art">'+artSVG(g.art)+'<div class="ttl">'+esc(g.name)+'</div></div><div class="info">';
             h += '<div class="tags">'+g.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join("")+'</div>';
             h += '<div class="meta"><span>Версия: '+esc(g.version)+'</span><span>Размер: '+esc(g.size)+'</span><span>'+esc(g.price)+'</span></div>';
             h += '<div class="plat">'+g.platforms.map(function(p){return '<i>'+esc(p)+'</i>';}).join("")+'</div><div class="actions">';
