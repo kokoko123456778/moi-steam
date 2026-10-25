@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 11
-                  versionName '2.9'
+                  versionCode 12
+                  versionName '2.10'
               }
               signingConfigs {
                   mygames {
@@ -2037,6 +2037,22 @@ jobs:
             if (view === "store") viewStore(); else if (view === "lib") viewLib(); else if (view === "links") viewLinks(); else if (view === "launcher") viewLauncher(); else viewHelp();
           }
           render();
+          /* 2.10: сами чиним библиотеку - основные игры качаются только из своего репозитория, копии убираем */
+          function fixLibrary(){
+            var fixed = 0;
+            for (var i = 0; i < GAMES.length; i++) { var g = GAMES[i]; if (!isMainGame(g)) continue;
+              var own = normRepo(g.custom ? g.repo : (g.links.apk || "")), sv = saved[g.id];
+              if (own && sv && typeof sv.apk === "string") { var r = normRepo(sv.apk); if (r !== own && (!r || baseName(r) === baseName(own))) { delete sv.apk; fixed++; } }
+              if (own && sv && typeof sv.pkg === "string" && sv.pkg !== g.pkg && g.pkg) { delete sv.pkg; fixed++; } }
+            if (fixed) persist();
+            var cps = allCopies();
+            if (cps.length) {
+              for (var j = 0; j < cps.length; j++) removeCustomGame(cps[j].id);   /* с телефона не удаляем: в копии может быть прогресс */
+              toast("Убраны копии игр (" + cps.length + "). Обновления теперь приходят в основные игры");
+              curGame = GAMES[0].id; render();
+            }
+          }
+          try { fixLibrary(); } catch (e) {}
           setTimeout(checkUpdates, 1500);
           </script>
           </body>
