@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 14
-                  versionName '2.12'
+                  versionCode 15
+                  versionName '2.13'
               }
               signingConfigs {
                   mygames {
@@ -1466,6 +1466,8 @@ jobs:
               short:"Симулятор мастерской по сборке компьютеров в 3D.", tags:["Симулятор","Компьютеры","C++ / SDL"], desc:"Сборка ПК: мастерская по сборке компьютеров в 3D - подбирай детали, собирай и отдавай заказы. Игра на C++ и SDL одним файлом." },
             { id:"p_shahmaty", name:"Шахматы", repo:"kokoko123456778/shahmaty", path:"shahmaty.cpp", kind:"cpp", orient:"portrait", pkg:"com.kokoko.shahmaty", art:"chess", color:"#4f7a36",
               short:"Шахматы против бота (5 уровней) или вдвоём на одном телефоне.", tags:["Настольная","Логика","C++ / SDL"], desc:"Шахматы: полные правила - рокировка, взятие на проходе, превращение пешки, мат, пат и ничьи. Играй против бота с 5 уровнями сложности или вдвоём на одном телефоне, с подсказкой ходов, отменой хода, часами и записью партии. Игра на C++ и SDL одним файлом." },
+            { id:"p_gorod", name:"Мой город", repo:"kokoko123456778/gorod", path:"gorod.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.gorod", art:"city", color:"#5aa8ea",
+              short:"Градостроитель: дороги, зоны, электричество, бюджет и рост города.", tags:["Стратегия","Градостроитель","C++ / SDL"], desc:"Мой город: изометрический градостроитель. Прокладывай дороги, размечай жилые, коммерческие и промышленные зоны, подводи электричество и воду, строй полицию, пожарных, больницы и школы, следи за бюджетом и налогами. Город растёт от деревни до мегаполиса. Игра на C++ и SDL одним файлом." },
             { id:"p_gaishnik", name:"Инспектор ДПС", repo:"kokoko123456778/gaishnik", path:"gaishnik.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.gaishnik", art:"police", color:"#1e50c8",
               short:"Работа инспектора ДПС: остановки, документы, багажник, погони и камеры.", tags:["Симулятор","Погони","Машины","C++ / SDL"], desc:"Инспектор ДПС: патрулируй трассу и город, останавливай машины, проверяй права, СТС и страховку, осматривай багажник, выписывай штрафы и гоняйся за нарушителями с мигалкой и сиреной. Ставь камеры скорости, прокачивай патрульную машину и получай звания. Игра на C++ и SDL одним файлом." },
             { id:"p_dalnoboy", name:"Дальнобойщик", repo:"kokoko123456778/dalnoboy", path:"dalnoboy.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.dalnoboy", art:"race", color:"#b8862b",
@@ -1758,6 +1760,12 @@ jobs:
               s += '<circle cx="170" cy="60" r="80" fill="url(#gpr)"/><circle cx="240" cy="60" r="80" fill="url(#gpb)"/><rect y="140" width="400" height="60" fill="#363a42"/><g fill="#eee"><rect x="20" y="182" width="44" height="5"/><rect x="120" y="182" width="44" height="5"/><rect x="220" y="182" width="44" height="5"/><rect x="320" y="182" width="44" height="5"/></g>';
               s += '<ellipse cx="205" cy="170" rx="140" ry="10" fill="#000" opacity=".45"/><path d="M70 160 L72 132 L96 124 L130 120 L152 94 L240 92 L280 120 L330 126 L344 138 L344 162 Z" fill="#f4f6fa"/><path d="M156 99 L196 98 L196 120 L136 121 Z M204 98 L238 97 L268 120 L204 120 Z" fill="#46689a"/><rect x="70" y="134" width="274" height="14" fill="#1e50c8"/><text x="206" y="146" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle" font-family="sans-serif">ДПС</text>';
               s += '<rect x="182" y="84" width="48" height="10" rx="3" fill="#2a2a30"/><rect x="185" y="86" width="20" height="6" rx="2" fill="#ff3c3c"/><rect x="207" y="86" width="20" height="6" rx="2" fill="#3c82ff"/><circle cx="124" cy="160" r="18" fill="#1a1a1e"/><circle cx="124" cy="160" r="9" fill="#aab"/><circle cx="292" cy="160" r="18" fill="#1a1a1e"/><circle cx="292" cy="160" r="9" fill="#aab"/><rect x="336" y="130" width="8" height="8" fill="#ffefaa"/>';
+            } else if (kind === "city") {
+              s += '<defs><linearGradient id="gcy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa8ea"/><stop offset="1" stop-color="#9ad0f0"/></linearGradient></defs><rect width="400" height="200" fill="url(#gcy)"/><circle cx="340" cy="38" r="20" fill="#ffe26e"/>';
+              s += '<polygon points="200,92 380,172 200,252 20,172" fill="#5fa84c"/><polygon points="200,132 236,148 92,212 56,196" fill="#4a4c54"/><polygon points="164,148 200,132 344,196 308,212" fill="#4a4c54"/>';
+              var B = function(x, y, w, h, t, l, r){ return '<polygon points="' + x + ',' + (y - h) + ' ' + (x + w) + ',' + (y - h + w / 2) + ' ' + x + ',' + (y - h + w) + ' ' + (x - w) + ',' + (y - h + w / 2) + '" fill="' + t + '"/><polygon points="' + (x - w) + ',' + (y - h + w / 2) + ' ' + x + ',' + (y - h + w) + ' ' + x + ',' + (y + w) + ' ' + (x - w) + ',' + (y + w / 2) + '" fill="' + l + '"/><polygon points="' + x + ',' + (y - h + w) + ' ' + (x + w) + ',' + (y - h + w / 2) + ' ' + (x + w) + ',' + (y + w / 2) + ' ' + x + ',' + (y + w) + '" fill="' + r + '"/>'; };
+              s += B(200, 104, 30, 70, "#c8cdd7", "#96a0af", "#788296") + B(140, 134, 26, 40, "#e6966e", "#be6e50", "#a05a46") + B(260, 134, 26, 55, "#82bee6", "#5a96c8", "#4678aa") + B(200, 164, 28, 48, "#f0dca0", "#c8b478", "#aa9664");
+              s += '<g fill="#ffeca0" opacity=".85"><rect x="180" y="70" width="5" height="7"/><rect x="190" y="75" width="5" height="7"/><rect x="180" y="90" width="5" height="7"/><rect x="210" y="75" width="5" height="7"/><rect x="220" y="70" width="5" height="7"/><rect x="210" y="95" width="5" height="7"/><rect x="185" y="160" width="5" height="7"/><rect x="215" y="160" width="5" height="7"/></g>';
             } else if (kind === "chess") {
               s += '<defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d4a24"/><stop offset="1" stop-color="#1b2d16"/></linearGradient></defs><rect width="400" height="200" fill="url(#gc)"/>';
               for (var r = 0; r < 4; r++) for (var c = 0; c < 16; c++) s += '<rect x="' + (c * 25) + '" y="' + (100 + r * 25) + '" width="25" height="25" fill="' + ((r + c) % 2 ? '#769656' : '#eeeed2') + '"/>';
