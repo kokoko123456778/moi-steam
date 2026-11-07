@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 15
-                  versionName '2.13'
+                  versionCode 16
+                  versionName '2.14'
               }
               signingConfigs {
                   mygames {
@@ -1466,6 +1466,8 @@ jobs:
               short:"Симулятор мастерской по сборке компьютеров в 3D.", tags:["Симулятор","Компьютеры","C++ / SDL"], desc:"Сборка ПК: мастерская по сборке компьютеров в 3D - подбирай детали, собирай и отдавай заказы. Игра на C++ и SDL одним файлом." },
             { id:"p_shahmaty", name:"Шахматы", repo:"kokoko123456778/shahmaty", path:"shahmaty.cpp", kind:"cpp", orient:"portrait", pkg:"com.kokoko.shahmaty", art:"chess", color:"#4f7a36",
               short:"Шахматы против бота (5 уровней) или вдвоём на одном телефоне.", tags:["Настольная","Логика","C++ / SDL"], desc:"Шахматы: полные правила - рокировка, взятие на проходе, превращение пешки, мат, пат и ничьи. Играй против бота с 5 уровнями сложности или вдвоём на одном телефоне, с подсказкой ходов, отменой хода, часами и записью партии. Игра на C++ и SDL одним файлом." },
+            { id:"p_buildworld", name:"BuildWorld", repo:"kokoko123456778/buildworld", path:"buildworld.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.buildworld", art:"cubes", color:"#6eb9f5",
+              short:"Песочница из кубиков: копай руду, крафти инструменты, строй.", tags:["Песочница","Выживание","Строительство","C++ / SDL"], desc:"BuildWorld: 3D-мир из кубиков. Копай уголь, железо, золото и алмазы, переплавляй руду в печи, крафти инструменты на верстаке, строй дома и спускайся в пещеры. Режимы выживания и творческий. Игра на C++ и SDL одним файлом." },
             { id:"p_gorod", name:"Мой город", repo:"kokoko123456778/gorod", path:"gorod.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.gorod", art:"city", color:"#5aa8ea",
               short:"Градостроитель: дороги, зоны, электричество, бюджет и рост города.", tags:["Стратегия","Градостроитель","C++ / SDL"], desc:"Мой город: изометрический градостроитель. Прокладывай дороги, размечай жилые, коммерческие и промышленные зоны, подводи электричество и воду, строй полицию, пожарных, больницы и школы, следи за бюджетом и налогами. Город растёт от деревни до мегаполиса. Игра на C++ и SDL одним файлом." },
             { id:"p_gaishnik", name:"Инспектор ДПС", repo:"kokoko123456778/gaishnik", path:"gaishnik.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.gaishnik", art:"police", color:"#1e50c8",
@@ -1766,6 +1768,13 @@ jobs:
               var B = function(x, y, w, h, t, l, r){ return '<polygon points="' + x + ',' + (y - h) + ' ' + (x + w) + ',' + (y - h + w / 2) + ' ' + x + ',' + (y - h + w) + ' ' + (x - w) + ',' + (y - h + w / 2) + '" fill="' + t + '"/><polygon points="' + (x - w) + ',' + (y - h + w / 2) + ' ' + x + ',' + (y - h + w) + ' ' + x + ',' + (y + w) + ' ' + (x - w) + ',' + (y + w / 2) + '" fill="' + l + '"/><polygon points="' + x + ',' + (y - h + w) + ' ' + (x + w) + ',' + (y - h + w / 2) + ' ' + (x + w) + ',' + (y + w / 2) + ' ' + x + ',' + (y + w) + '" fill="' + r + '"/>'; };
               s += B(200, 104, 30, 70, "#c8cdd7", "#96a0af", "#788296") + B(140, 134, 26, 40, "#e6966e", "#be6e50", "#a05a46") + B(260, 134, 26, 55, "#82bee6", "#5a96c8", "#4678aa") + B(200, 164, 28, 48, "#f0dca0", "#c8b478", "#aa9664");
               s += '<g fill="#ffeca0" opacity=".85"><rect x="180" y="70" width="5" height="7"/><rect x="190" y="75" width="5" height="7"/><rect x="180" y="90" width="5" height="7"/><rect x="210" y="75" width="5" height="7"/><rect x="220" y="70" width="5" height="7"/><rect x="210" y="95" width="5" height="7"/><rect x="185" y="160" width="5" height="7"/><rect x="215" y="160" width="5" height="7"/></g>';
+            } else if (kind === "cubes") {
+              s += '<defs><linearGradient id="gcb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6eb9f5"/><stop offset="1" stop-color="#a0d7f0"/></linearGradient></defs><rect width="400" height="200" fill="url(#gcb)"/>';
+              s += '<g fill="#fff"><ellipse cx="70" cy="40" rx="34" ry="12"/><ellipse cx="100" cy="34" rx="28" ry="12"/><ellipse cx="320" cy="48" rx="34" ry="12"/></g><rect y="168" width="400" height="32" fill="#6aae46"/><rect y="176" width="400" height="24" fill="#86603e"/>';
+              var C = function(x, y, a, t, l, r, dot){ var h = a * 0.87, o = '<polygon points="' + x + ',' + (y - a) + ' ' + (x + h) + ',' + (y - a / 2) + ' ' + x + ',' + y + ' ' + (x - h) + ',' + (y - a / 2) + '" fill="' + t + '"/><polygon points="' + (x - h) + ',' + (y - a / 2) + ' ' + x + ',' + y + ' ' + x + ',' + (y + a) + ' ' + (x - h) + ',' + (y + a / 2) + '" fill="' + l + '"/><polygon points="' + x + ',' + y + ' ' + (x + h) + ',' + (y - a / 2) + ' ' + (x + h) + ',' + (y + a / 2) + ' ' + x + ',' + (y + a) + '" fill="' + r + '"/>';
+                if (dot) for (var i = 0; i < 6; i++) { var u = ((i * 37) % 10) / 12 + 0.1, v = ((i * 53) % 10) / 12 + 0.1, sd = i % 2 ? 1 : -1; o += '<rect x="' + (x + sd * h * u - 3) + '" y="' + (y + a * v - (sd > 0 ? h * u * 0.57 : h * u * 0.57)) + '" width="6" height="6" fill="' + dot + '"/>'; }
+                return o; };
+              s += C(150, 120, 46, "#6ebe46", "#82583c", "#69482f") + C(250, 120, 46, "#96969e", "#7d7d84", "#64646c", "#5adcec") + C(200, 76, 46, "#96969e", "#7d7d84", "#64646c", "#fad23c");
             } else if (kind === "chess") {
               s += '<defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d4a24"/><stop offset="1" stop-color="#1b2d16"/></linearGradient></defs><rect width="400" height="200" fill="url(#gc)"/>';
               for (var r = 0; r < 4; r++) for (var c = 0; c < 16; c++) s += '<rect x="' + (c * 25) + '" y="' + (100 + r * 25) + '" width="25" height="25" fill="' + ((r + c) % 2 ? '#769656' : '#eeeed2') + '"/>';
