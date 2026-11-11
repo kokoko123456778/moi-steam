@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 18
-                  versionName '2.16'
+                  versionCode 19
+                  versionName '2.17'
               }
               signingConfigs {
                   mygames {
@@ -1485,8 +1485,11 @@ jobs:
           function presetFor(g){ var r1 = normRepo(g.repo), r2 = normRepo(getLink(g, "apk")); for (var i = 0; i < PRESETS.length; i++) { var r = PRESETS[i].repo.toLowerCase(); if (g.id === PRESETS[i].id || r === r1 || r === r2) return PRESETS[i]; } return null; }
           (function addPresets(){
             var removed = presetRemoved(), added = false;
-            for (var i = 0; i < PRESETS.length; i++) { var p = PRESETS[i]; if (removed.indexOf(p.id) >= 0) continue;
+            for (var i = 0; i < PRESETS.length; i++) { var p = PRESETS[i];
               var have = null; for (var j = 0; j < GAMES.length; j++) if (GAMES[j].custom && presetFor(GAMES[j]) === p) { have = GAMES[j]; break; }
+              // удалённую встроенную игру не возвращаем, но если её снова добавили по ссылке (есть в списке) - отдаём ей значок и описание
+              if (!have && removed.indexOf(p.id) >= 0) continue;
+              if (have && removed.indexOf(p.id) >= 0) { removed = removed.filter(function(x){ return x !== p.id; }); try { localStorage.setItem(PRESET_KEY, JSON.stringify(removed)); } catch (e) {} }
               if (!have) { have = makeCustom({ id:p.id, name:p.name, apk:"https://github.com/" + p.repo, pkg:p.pkg, repo:p.repo, path:p.path, kind:p.kind, orient:p.orient }); GAMES.push(have); added = true; }
               // описание и картинка берутся из встроенного списка, а значок, если ты его менял, остаётся твой
               have.name = p.name; have.short = p.short; have.tags = p.tags; have.desc = p.desc; have.color = p.color; if (!have.icons) have.art = p.art;
