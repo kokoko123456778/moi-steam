@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 20
-                  versionName '2.18'
+                  versionCode 21
+                  versionName '2.19'
               }
               signingConfigs {
                   mygames {
@@ -1487,6 +1487,8 @@ jobs:
             var removed = presetRemoved(), added = false;
             for (var i = 0; i < PRESETS.length; i++) { var p = PRESETS[i];
               var have = null; for (var j = 0; j < GAMES.length; j++) if (GAMES[j].custom && presetFor(GAMES[j]) === p) { have = GAMES[j]; break; }
+              // если у игры в библиотеке ссылка на копию репозитория (например, device-corp-2), а основной репозиторий встроенной игры есть - переводим ссылку на основной
+              if (!have) { for (var k = 0; k < GAMES.length; k++) { var g2 = GAMES[k]; if (!g2.custom) continue; var lr = normRepo(getLink(g2, "apk")), pr = p.repo.toLowerCase(); if (lr && lr !== pr && lr.replace(/-\d+$/, "") === pr) { if (!saved[g2.id]) saved[g2.id] = {}; saved[g2.id].apk = "https://github.com/" + p.repo; g2.repo = p.repo; have = g2; persist(); break; } } }
               // удалённую встроенную игру не возвращаем, но если её снова добавили по ссылке (есть в списке) - отдаём ей значок и описание
               if (!have && removed.indexOf(p.id) >= 0) continue;
               if (have && removed.indexOf(p.id) >= 0) { removed = removed.filter(function(x){ return x !== p.id; }); try { localStorage.setItem(PRESET_KEY, JSON.stringify(removed)); } catch (e) {} }
