@@ -1124,8 +1124,8 @@ jobs:
                   applicationId 'com.mygames.launcher'
                   minSdk 21
                   targetSdk 34
-                  versionCode 21
-                  versionName '2.19'
+                  versionCode 22
+                  versionName '2.20'
               }
               signingConfigs {
                   mygames {
@@ -1477,7 +1477,10 @@ jobs:
               desc:"Дальнобойщик: начинаешь на старой фуре в Екатеринбурге, берёшь заказы на бирже, сцепляешь прицеп задним ходом и везёшь груз между 43 городами - от Москвы и Краснодара до Югры и Ямала. Заправки, весовой контроль, посты ДПС и камеры, усталость и сон, ремонт и тюнинг, покупка новых тягачей. На севере снег и зимники со ледовой переправой. Мосты через реки, развязки, ж/д переезды с поездами, дорожные работы с реверсом, сёла со светофорами и пешеходами, съезды в деревни с дешёвой заправкой и ночлегом. Навигатор с выбором маршрута. Города можно проехать насквозь или по объездной: улицы с достопримечательностями, машинами, автобусами, трамваями и пешеходами, порт в Новороссийске. Четырёхполосные трассы, объездные вокруг посёлков, времена года, туман, гололёд, метели с перекрытием дороги, платные участки." },
             { id:"p_devicecorp", name:"Девайс-Корп", repo:"kokoko123456778/device-corp", path:"device_corp.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.devicecorp", art:"devices", color:"#3a7bd5",
               short:"Симулятор компании по разработке электроники.", tags:["Симулятор","Бизнес","Электроника","C++ / SDL"],
-              desc:"Девайс-Корп: основай компанию, проектируй смартфоны, ноутбуки и часы из модулей, выводи их на рынок и следи за отзывами и продажами. Нанимай сотрудников, открывай офисы и исследуй новые технологии. Игра на C++ и SDL одним файлом." }
+              desc:"Девайс-Корп: основай компанию, проектируй смартфоны, ноутбуки и часы из модулей, выводи их на рынок и следи за отзывами и продажами. Нанимай сотрудников, открывай офисы и исследуй новые технологии. Игра на C++ и SDL одним файлом." },
+            { id:"p_grom", name:"Позывной: Гром", repo:"kokoko123456778/grom-1", path:"grom_1.cpp", kind:"cpp", orient:"landscape", pkg:"com.kokoko.grom1", art:"soldier", color:"#5a6a3c",
+              short:"Военный шутер от первого лица: отряд, укрытия, кампания из шести миссий.", tags:["Шутер","Экшен","Кампания","C++ / SDL"],
+              desc:"Позывной: Гром: сержант Котов и отряд «Гром» охотятся за ракетами генерала Варгаса и Синдиката Ворона. Штурм корабля в шторм, бои на рынке, снайперская миссия, оборона телецентра и финальный отсчёт. Отдача, прицеливание, стойки, гранаты и ИИ, который ищет укрытия. Игра на C++ и SDL одним файлом." }
           ];
           function presetRemoved(){ try { return JSON.parse(localStorage.getItem(PRESET_KEY) || "[]"); } catch (e) { return []; } }
           function markPresetRemoved(pid){ var a = presetRemoved(); if (a.indexOf(pid) < 0) a.push(pid); try { localStorage.setItem(PRESET_KEY, JSON.stringify(a)); } catch (e) {} }
@@ -1796,6 +1799,12 @@ jobs:
               s += '<rect x="70" y="60" width="150" height="96" rx="8" fill="#1d2433"/><rect x="80" y="70" width="130" height="76" rx="3" fill="#8fd0f0"/><rect x="50" y="156" width="190" height="8" rx="3" fill="#c9ced8"/>';
               s += '<rect x="250" y="88" width="56" height="100" rx="9" fill="#1d2433"/><rect x="256" y="98" width="44" height="76" rx="2" fill="#f0c04a"/><circle cx="278" cy="180" r="3" fill="#8a93a6"/>';
               s += '<g transform="translate(330 46)" fill="none" stroke="#ffd34a" stroke-width="7" stroke-linecap="round"><circle r="18"/><path d="M0 -30 V-22 M0 22 V30 M-30 0 H-22 M22 0 H30 M-21 -21 L-16 -16 M16 16 L21 21 M21 -21 L16 -16 M-16 16 L-21 21"/></g>';
+            } else if (kind === "soldier") {
+              s += '<defs><linearGradient id="gsl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46392a"/><stop offset="1" stop-color="#8a6a40"/></linearGradient></defs><rect width="400" height="200" fill="url(#gsl)"/>';
+              s += '<polygon points="0,150 60,120 120,140 190,110 260,135 330,105 400,130 400,200 0,200" fill="#2c3422"/><rect y="168" width="400" height="32" fill="#232a1a"/>';
+              s += '<polygon points="236,10 196,74 222,74 186,132 262,56 234,56 262,10" fill="#ffce40"/>';
+              s += '<path d="M110 168 A90 70 0 0 1 290 168 Z" fill="#54603e"/><rect x="96" y="160" width="208" height="14" rx="4" fill="#465234"/><line x1="140" y1="130" x2="260" y2="130" stroke="#3c4630" stroke-width="5"/>';
+              s += '<g stroke="#e02828" fill="none" stroke-width="4"><circle cx="200" cy="132" r="18"/><line x1="172" y1="132" x2="228" y2="132"/><line x1="200" y1="104" x2="200" y2="160"/></g>';
             } else if (kind === "generic") {
               s += '<defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a2a7a"/><stop offset="1" stop-color="#142a52"/></linearGradient></defs><rect width="400" height="200" fill="url(#gg)"/><g fill="#c7d5e0" opacity=".85"><rect x="150" y="80" width="100" height="50" rx="22"/></g><g fill="#2a1f55"><rect x="172" y="98" width="26" height="6"/><rect x="182" y="88" width="6" height="26"/><circle cx="222" cy="96" r="5"/><circle cx="234" cy="108" r="5"/></g>';
             } else {
